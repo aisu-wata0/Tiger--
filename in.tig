@@ -1,0 +1,14 @@
+let
+        var n := 0
+        var f := 1     /* o fatorial  */
+        var i := 2     /* um contador */
+in
+        printf("Entre com o numero:");
+        n := getint();
+        while i <= n do
+        (
+                f := f * i;
+                i := i + 1;
+        )
+        printf("\nfatorial de %d = %d\n", n, f)
+end
