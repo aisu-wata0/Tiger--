@@ -101,59 +101,85 @@ end	{
 }
 
 "("	{
+    
 	idCount["("] += 1;
+	return('(');
 }
 
 ")"	{
+    
 	idCount[")"] += 1;
+	return(')');
 }
 
 "+"	{
+    
 	idCount["+"] += 1;
+	return('+');
 }
 
 "-"	{
+    
 	idCount["-"] += 1;
+	return('-');
 }
 
 "*"	{
+    
 	idCount["*"] += 1;
+	return('*');
 }
 
 "/"	{
+    
 	idCount["/"] += 1;
+	return('/');
 }
 
 "="	{
+    
 	idCount["="] += 1;
+	return('=');
 }
 
 "<>"	{
+
+    
 	idCount["<>"] += 1;
+	return(NE_OP);
 }
 
 ">"	{
+    
 	idCount[">"] += 1;
+	return('>');
 }
 
 "<"	{
+    
 	idCount["<"] += 1;
+	return('<');
 }
 
 ">="	{
+    
 	idCount[">="] += 1;
+	return(GE_OP);
 }
 
 "<="	{
 	idCount["<="] += 1;
+    return(LE_OP);
 }
 
 "&"	{
 	idCount["&"] += 1;
+    return('&');
 }
 
 "|"	{
 	idCount["|"] += 1;
+    return('|');
 }
 
 {identifier}	{ idCount["IDENTIFICADOR"] += 1; }
