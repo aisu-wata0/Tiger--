@@ -477,6 +477,20 @@ expression
 	| FUNCTIONCALL
 	;
 
+IFTHEN
+	:matched
+	|open
+	;
+
+matched
+	:IF expression then matched ELSE matched
+	;
+
+open
+	:IF expression THEN expressions
+	|IF expression THEN matched ELSE open
+	;
+
 %%
 
 #include <stdio.h>
