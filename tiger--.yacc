@@ -458,10 +458,27 @@ declaration_list
 	: declaration
 	| declaration_list declaration
 	;
-	
+
+
+
 
 scope
 	: LET declarations IN expressions END
+	;
+
+
+program → exp
+declarations
+	: declaration declarations
+	| declaration
+	;
+	
+declaration
+	: declarationVar | declarationFunc
+	;
+	
+declarationFunc
+	:
 	;
 
 expressions
@@ -470,12 +487,80 @@ expressions
 	;
 
 expression
-	:
-	| ATRIBUTION
+	: ATRIBUTION
 	| IFTHEN
 	| WHILELOOP
 	| FUNCTIONCALL
+	| '(' parameters ')'
 	;
+	
+ATRIBUTION
+	: IDENTIFIER ASSIGNMENT expression ';'
+	;
+
+valued_expression
+	: arithmetic_expression
+	| logic_expression
+	;
+
+
+logic_expression
+	: logic_expression '&' logic_expression_com
+	| logic_expression '|' logic_expression_com
+	| logic_expression_com
+	;
+	
+logic_expression_com
+	: logic_expression_com '=' logic_expression_st
+	| logic_expression_com NE_OP logic_expression_st
+	| logic_expression_com '>' logic_expression_st
+	| logic_expression_com '<' logic_expression_st
+	| logic_expression_com GE_OP logic_expression_st
+	| logic_expression_com LE_OP logic_expression_st
+	| logic_expression_st
+	;
+	
+logic_expression_st
+	: IDENTIFIER
+	| CONSTANT
+	| '(' logic_expression ')'
+	;
+
+
+arithmetic_expression
+	: arithmetic_expression '+' arithmetic_expression_md
+	| arithmetic_expression '-' arithmetic_expression_md
+	| arithmetic_expression_md
+	;
+
+arithmetic_expression_md
+	: arithmetic_expression_md '*' arithmetic_expression_con
+	| arithmetic_expression_md '/' arithmetic_expression_con
+	| arithmetic_expression_con
+	;
+	
+arithmetic_expression_con
+	: IDENTIFIER
+	| CONSTANT
+	| '(' arithmetic_expression ')'
+	;
+
+
+
+WHILELOOP
+	: WHILE expression DO expression
+	;
+	
+FUNCTIONCALL
+	: IDENTIFIER '(' parameters ')'
+	;
+
+
+parameters
+	: expression ',' parameters
+	| expression
+	; 
+
 
 %%
 
