@@ -46,58 +46,72 @@ bad_string        \"([^"\n]|\"\")+
 
 "*/"		{ // Unopened comment
 	idCount["UNKNOWN"] += 1;
+	return(UNKNOWN);
 }
 
 var	{
 	idCount["var"] += 1;
+	return(VAR);
 }
 
 function	{
 	idCount["function"] += 1;
+	return(FUNCTION);
 }
 
 if	{
 	idCount["if"] += 1;
+	return(IF);
 }
 
 then	{
 	idCount["then"] += 1;
+	return(THEN);
 }
 
 else	{
 	idCount["else"] += 1;
+	return(ELSE);
 }
 
 while	{
 	idCount["while"] += 1;
+	return(WHILE);
 }
 
 do	{
 	idCount["do"] += 1;
+	return(DO);
 }
 
 let	{
 	idCount["let"] += 1;
+	return(LET);
 }
 
 in	{
 	idCount["in"] += 1;
+	return(IN);
 }
 
 end	{
 	idCount["end"] += 1;
+	return(END);
 }
 
 ":="	{
 	idCount[":="] += 1;
+	return(ASSIGN);
 }
 
 ";"	{
 	idCount[";"] += 1;
+	return(';');
 }
 
 ","	{
 	idCount[","] += 1;
+	return(',');
 }
 
 "("	{
