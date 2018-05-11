@@ -185,14 +185,19 @@ end	{
     return('|');
 }
 
-{identifier}	{ idCount["IDENTIFICADOR"] += 1; }
+{identifier}	{
+	idCount["IDENTIFIER"] += 1;
+	return(IDENTIFIER);
+}
 
 {unsigned_integer}	{
-	idCount["INTEIRO"] += 1;
+	idCount["CONSTANT"] += 1;
+	return(CONSTANT);
 }
 
 {string}	{
-	idCount["{string}"] += 1;
+	idCount["STRING_LITERAL"] += 1;
+	return(STRING_LITERAL);
 }
 
 {white_space}	/* no effect */
@@ -206,6 +211,7 @@ end	{
 
 .	{
 	idCount["UNKNOWN"] += 1;
+	return(UNKNOWN);
 }
 
 
