@@ -44,7 +44,7 @@ bad_string        \"([^"\n]|\"\")+
 <C_COMMENT>\n			++lineNumber;
 <C_COMMENT><<EOF>>		yyerror("EOF in comment");
 
-"*/"		{ // Unopened comment
+"*/"	{ // Unopened comment
 	idCount["UNKNOWN"] += 1;
 	return(UNKNOWN);
 }
@@ -115,68 +115,57 @@ end	{
 }
 
 "("	{
-    
 	idCount["("] += 1;
 	return('(');
 }
 
 ")"	{
-    
 	idCount[")"] += 1;
 	return(')');
 }
 
 "+"	{
-    
 	idCount["+"] += 1;
 	return('+');
 }
 
 "-"	{
-    
 	idCount["-"] += 1;
 	return('-');
 }
 
 "*"	{
-    
 	idCount["*"] += 1;
 	return('*');
 }
 
 "/"	{
-    
 	idCount["/"] += 1;
 	return('/');
 }
 
 "="	{
-    
 	idCount["="] += 1;
 	return('=');
 }
 
 "<>"	{
 
-    
 	idCount["<>"] += 1;
 	return(NE_OP);
 }
 
 ">"	{
-    
 	idCount[">"] += 1;
 	return('>');
 }
 
 "<"	{
-    
 	idCount["<"] += 1;
 	return('<');
 }
 
 ">="	{
-    
 	idCount[">="] += 1;
 	return(GE_OP);
 }
@@ -208,7 +197,9 @@ end	{
 
 {white_space}	/* no effect */
 
-\n	++lineNumber;
+\n	{
+	++lineNumber;
+}
 
 
  /*.	yyerror("Illegal input"); */
