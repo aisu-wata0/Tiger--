@@ -476,11 +476,15 @@ declarations
 declaration
 	: declarationVar | declarationFunc
 	;
+//taski zone begin	
+declarationVar
+	: VAR id ASSIGN valued_expression
+	;
 	
 declarationFunc
-	:
+	: FUNCTION id '(' parameters ')' ASSIGN expression
 	;
-
+//taski zone end
 expressions
 	: expression expressions
 	| expression
