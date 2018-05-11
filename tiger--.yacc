@@ -462,12 +462,10 @@ declaration_list
 
 
 
-scope
+program
 	: LET declarations IN expressions END
 	;
 
-
-program → exp
 declarations
 	: declaration declarations
 	| declaration
@@ -487,16 +485,60 @@ expressions
 	;
 
 expression
-	: ATRIBUTION
-	| IFTHEN
-	| WHILELOOP
-	| FUNCTIONCALL
+	: atribution
+	| ifThenStatement
+	| whileLoop
+	| functionCall
 	| '(' parameters ')'
 	;
-	
-ATRIBUTION
-	: IDENTIFIER ASSIGNMENT expression ';'
+
+
+atribution
+	: IDENTIFIER ASSIGNMENT valued_expression ';'
 	;
+
+
+whileLoop
+	: WHILE valued_expression DO expression
+	;
+
+
+functionCall
+	: IDENTIFIER '(' parameters ')' ';'
+	;
+
+parameters
+	: valued_expression ',' valued_expression
+	| valued_expression
+	; 
+
+
+ifThenStatement
+	: ifThenElse
+	| ifThen
+	;
+
+ifThenElse
+	: IF valued_expression THEN expression ELSE expression
+	;
+
+ifThen
+	: IF valued_expression THEN expression
+	;
+
+ /**
+ifThenElse
+	: IF expression then ifThenElse ELSE ifThenElse
+	;
+
+ifThen
+	: IF valued_expression THEN expression
+	| IF valued_expression THEN ifThenElse ELSE ifThen
+	;
+
+ /**/
+
+
 
 valued_expression
 	: arithmetic_expression
@@ -538,43 +580,18 @@ arithmetic_expression_md
 	| arithmetic_expression_md '/' arithmetic_expression_con
 	| arithmetic_expression_con
 	;
-	
-arithmetic_expression_con
+
+arithmetic_expression_con:
+	: '-' arithmetic_expression_value
+	| arithmetic_expression_value
+	;
+
+arithmetic_expression_value
 	: IDENTIFIER
 	| CONSTANT
 	| '(' arithmetic_expression ')'
 	;
 
-
-
-WHILELOOP
-	: WHILE expression DO expression
-	;
-	
-FUNCTIONCALL
-	: IDENTIFIER '(' parameters ')'
-	;
-
-
-parameters
-	: expression ',' parameters
-	| expression
-	; 
-
-
-IFTHEN
-	:matched
-	|open
-	;
-
-matched
-	:IF expression then matched ELSE matched
-	;
-
-open
-	:IF expression THEN expressions
-	|IF expression THEN matched ELSE open
-	;
 
 %%
 
