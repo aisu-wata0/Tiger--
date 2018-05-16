@@ -1,24 +1,15 @@
 
 %{
-
 #include <stdio.h>
 #include <iostream>
 #include <map>
 
-int lineNumber = 0;
+#include "tiger--.tab.h"
 
 std::map<std::string,int> idCount;
 
-void erroryy(const std::string & msg)
-{
-	fflush(stdout);
-	std::cerr << "Error: " << msg << " in line " << yylineno << ". Token = " << yytext << std::endl;
-	
-	exit(1);
-}
-
-
 %}
+
 
 %x C_COMMENT
 
@@ -42,8 +33,8 @@ bad_string        \"([^"\n]|\"\")+
 <C_COMMENT>"*/"			BEGIN(INITIAL);
 <C_COMMENT>"/*"			{} // ignore nested comments
 <C_COMMENT>[^*/\n]+		// ignore
-<C_COMMENT>\n			++lineNumber;
-<C_COMMENT><<EOF>>		erroryy("EOF in comment");
+<C_COMMENT>\n			++yylineno;
+<C_COMMENT><<EOF>>		yyerror("EOF in comment");
 
 "*/"	{ // Unopened comment
 	idCount["UNKNOWN"] += 1;
@@ -204,11 +195,11 @@ end	{
 {white_space}	/* no effect */
 
 \n	{
-	++lineNumber;
+	++yylineno;
 }
 
 
- /*.	erroryy("Illegal input"); */
+ /*.	yyerror("Illegal input"); */
 
 .	{
 	idCount["UNKNOWN"] += 1;
@@ -218,7 +209,7 @@ end	{
 
 %%
 
-
+/*
 int mein()
 {
 	
@@ -231,4 +222,4 @@ int mein()
 	return 0;
 }
 
-
+*/

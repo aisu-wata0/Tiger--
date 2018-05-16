@@ -13,24 +13,18 @@
 %{
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <iostream>
 #include <stdio.h>
-#include "lex.yy.c"
+#include <ctype.h>
 
-//extern char yytext[];
-//extern char yylex();
-//extern int yylineno;
+extern FILE *fp;
+
+extern char *yytext;
+extern int yylex();
+extern int yylineno;
 //extern int column;
-/*
-int yywrap() {
-   // open next reference or source file and start scanning
-   if((yyin = compiler->getNextFile()) != NULL) {
-      yylineno = 0; // reset line counter for next source file
-      return 0;
-   }
-   return 1;
-}*/
-
+   
 void yyerror(const std::string & msg)
 {
 	fflush(stdout);
@@ -39,12 +33,23 @@ void yyerror(const std::string & msg)
 	exit(1);
 }
 
- /*
-void yyerror(char const *s)
+#include"lex.yy.c"
+
+int count=0;
+
+int main(int argc, char *argv[])
 {
-	printf("\n%*s\n%*s\n", column, "^", column, s);
+	yyin = fopen(argv[1], "r");
+
+	if(!yyparse())
+		printf("\nParsing complete\n");
+	else
+		printf("\nParsing failed\n");
+
+	fclose(yyin);
+	
+	return 0;
 }
-*/
 
 %}
 
@@ -186,3 +191,4 @@ arithmetic_expression_value
 
 
 %%
+
