@@ -4,18 +4,19 @@
 #include <stdio.h>
 #include <iostream>
 #include <map>
-// #include "y.tab.h"
 
 int lineNumber = 0;
 
 std::map<std::string,int> idCount;
 
-void yyerror(const std::string & msg)
+void erroryy(const std::string & msg)
 {
-	std::cerr << "Error: " << msg << " in line " << lineNumber << ". Token = " << yytext << "\n";
+	fflush(stdout);
+	std::cerr << "Error: " << msg << " in line " << yylineno << ". Token = " << yytext << std::endl;
 	
 	exit(1);
 }
+
 
 %}
 
@@ -42,7 +43,7 @@ bad_string        \"([^"\n]|\"\")+
 <C_COMMENT>"/*"			{} // ignore nested comments
 <C_COMMENT>[^*/\n]+		// ignore
 <C_COMMENT>\n			++lineNumber;
-<C_COMMENT><<EOF>>		yyerror("EOF in comment");
+<C_COMMENT><<EOF>>		erroryy("EOF in comment");
 
 "*/"	{ // Unopened comment
 	idCount["UNKNOWN"] += 1;
@@ -207,7 +208,7 @@ end	{
 }
 
 
- /*.	yyerror("Illegal input"); */
+ /*.	erroryy("Illegal input"); */
 
 .	{
 	idCount["UNKNOWN"] += 1;
@@ -218,7 +219,7 @@ end	{
 %%
 
 
-int main()
+int mein()
 {
 	
 	yylex();
