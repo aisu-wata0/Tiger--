@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 	yyin = fopen(argv[1], "r");
 
 	if(!yyparse())
-		printf("\nParsing complete\n");
+		printf("\nParsing completed\n");
 	else
 		printf("\nParsing failed\n");
 
@@ -73,7 +73,7 @@ declarationVar
 	;
 	
 declarationFunc
-	: FUNCTION IDENTIFIER '(' parameters ')' ASSIGN expression
+	: FUNCTION IDENTIFIER '(' parameter_list ')' ASSIGN expression
 	;
 
 expressions
@@ -86,7 +86,7 @@ expression
 	| ifThenStatement
 	| whileLoop
 	| functionCall
-	| '(' parameters ')'
+	| '(' parameter_list ')'
 	;
 
 
@@ -101,12 +101,14 @@ whileLoop
 
 
 functionCall
-	: IDENTIFIER '(' parameters ')' ';'
+	: IDENTIFIER '(' parameter_list ')' ';'
 	;
 
-parameters
-	: valued_expression ',' valued_expression
+parameter_list
+	: valued_expression ',' parameter_list
 	| valued_expression
+	| STRING_LITERAL ',' parameter_list
+	| STRING_LITERAL
 	; 
 
 
