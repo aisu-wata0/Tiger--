@@ -5,9 +5,48 @@
 
 %token IF ELSE WHILE DO
 %token ASSIGN END LET THEN FUNCTION VAR
+%token IN
 %token UNKNOWN
 
 %start program
+
+%{
+
+#include <stdio.h>
+#include <iostream>
+#include <stdio.h>
+#include "lex.yy.c"
+
+//extern char yytext[];
+//extern char yylex();
+//extern int yylineno;
+//extern int column;
+/*
+int yywrap() {
+   // open next reference or source file and start scanning
+   if((yyin = compiler->getNextFile()) != NULL) {
+      yylineno = 0; // reset line counter for next source file
+      return 0;
+   }
+   return 1;
+}*/
+
+void yyerror(const std::string & msg)
+{
+	fflush(stdout);
+	std::cerr << "Error: " << msg << " in line " << yylineno << ". Token = " << yytext << std::endl;
+	
+	exit(1);
+}
+
+ /*
+void yyerror(char const *s)
+{
+	printf("\n%*s\n%*s\n", column, "^", column, s);
+}
+*/
+
+%}
 
 %%
 
@@ -25,11 +64,11 @@ declaration
 	;
 
 declarationVar
-	: VAR id ASSIGN valued_expression
+	: VAR IDENTIFIER ASSIGN valued_expression
 	;
 	
 declarationFunc
-	: FUNCTION id '(' parameters ')' ASSIGN expression
+	: FUNCTION IDENTIFIER '(' parameters ')' ASSIGN expression
 	;
 
 expressions
@@ -47,7 +86,7 @@ expression
 
 
 atribution
-	: IDENTIFIER ASSIGNMENT valued_expression ';'
+	: IDENTIFIER ASSIGN valued_expression ';'
 	;
 
 
@@ -134,7 +173,7 @@ arithmetic_expression_md
 	| arithmetic_expression_con
 	;
 
-arithmetic_expression_con:
+arithmetic_expression_con
 	: '-' arithmetic_expression_value
 	| arithmetic_expression_value
 	;
@@ -147,15 +186,3 @@ arithmetic_expression_value
 
 
 %%
-
-#include <stdio.h>
-
-extern char yytext[];
-extern int column;
-
-void yyerror(char const *s)
-{
-	fflush(stdout);
-	printf("\n%*s\n%*s\n", column, "^", column, s);
-}
-
