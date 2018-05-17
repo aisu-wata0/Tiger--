@@ -78,7 +78,7 @@ declarationFunc
 
 expression_sequence
 	: expression_list expression
-	| expression_list expression ';'
+	| expression_list
 	;
 
 expression_list
@@ -97,22 +97,32 @@ void_expression
 	: ifThenStatement
 	| whileLoop
 	| atribution
-	| '(' expression_list void_expression ')'
-	| '(' expression_list void_expression ';' ')'
-	| '(' void_expression ')'
-	| '(' void_expression ';' ')'
+	| void_sequence
 	| functionCall
 	;
-
 
 valued_expression
 	: logic_expression
-	| '(' expression_list valued_expression ')'
-	| '(' expression_list valued_expression ';' ')'
-	| '(' valued_expression ')'
+	| valued_sequence
 	| functionCall
 	;
 	
+valued_sequence	
+	: '(' expression_list valued_expression semicolon_opt ')'
+	| '(' valued_expression semicolon_opt ')'
+	;
+	
+void_sequence	
+	: '(' expression_list void_expression semicolon_opt ')'
+	| '(' void_expression semicolon_opt ')'
+	| '(' semicolon_opt ')'
+	;
+
+semicolon_opt
+	: /* empty */
+	| ";"
+	;
+
 atribution
 	: IDENTIFIER ASSIGN valued_expression
 	;
