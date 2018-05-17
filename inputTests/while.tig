@@ -1,0 +1,9 @@
+let
+	var a := 1
+	var b := 2
+in
+	while (a<b; b>a; a*b > 0) do
+	(
+		a := a - 1;
+	)
+end
