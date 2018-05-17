@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 %%
 
 program
-	: LET declaration_list IN expressions END
+	: LET declaration_list IN expression_sequence END
 	;
 
 declaration_list
@@ -76,22 +76,45 @@ declarationFunc
 	: FUNCTION IDENTIFIER '(' parameter_list ')' ASSIGN expression
 	;
 
-expressions
-	: expression expressions
-	| expression
+expression_sequence
+	: expression_list expression
+	| expression_list expression ';'
 	;
+
+expression_list
+	: expression ';' expression_list
+	| expression ';'
+	;
+
 
 expression
-	: atribution
-	| ifThenStatement
-	| whileLoop
-	| functionCall
-	| '(' parameter_list ')'
+	: void_expression
+	| valued_expression
 	;
 
 
+void_expression
+	: ifThenStatement
+	| whileLoop
+	| atribution
+	| '(' expression_list void_expression ')'
+	| '(' expression_list void_expression ';' ')'
+	| '(' void_expression ')'
+	| '(' void_expression ';' ')'
+	| functionCall
+	;
+
+
+valued_expression
+	: logic_expression
+	| '(' expression_list valued_expression ')'
+	| '(' expression_list valued_expression ';' ')'
+	| '(' valued_expression ')'
+	| functionCall
+	;
+	
 atribution
-	: IDENTIFIER ASSIGN valued_expression ';'
+	: IDENTIFIER ASSIGN valued_expression
 	;
 
 
@@ -101,7 +124,7 @@ whileLoop
 
 
 functionCall
-	: IDENTIFIER '(' parameter_list ')' ';'
+	: IDENTIFIER '(' parameter_list ')'
 	;
 
 parameter_list
@@ -109,6 +132,7 @@ parameter_list
 	| valued_expression
 	| STRING_LITERAL ',' parameter_list
 	| STRING_LITERAL
+	|
 	; 
 
 
@@ -138,13 +162,6 @@ ifThen
  /**/
 
 
-
-valued_expression
-	: arithmetic_expression
-	| logic_expression
-	;
-
-
 logic_expression
 	: logic_expression '&' logic_expression_com
 	| logic_expression '|' logic_expression_com
@@ -152,19 +169,13 @@ logic_expression
 	;
 	
 logic_expression_com
-	: logic_expression_com '=' logic_expression_st
-	| logic_expression_com NE_OP logic_expression_st
-	| logic_expression_com '>' logic_expression_st
-	| logic_expression_com '<' logic_expression_st
-	| logic_expression_com GE_OP logic_expression_st
-	| logic_expression_com LE_OP logic_expression_st
-	| logic_expression_st
-	;
-	
-logic_expression_st
-	: IDENTIFIER
-	| CONSTANT
-	| '(' logic_expression ')'
+	: logic_expression_com '=' arithmetic_expression
+	| logic_expression_com NE_OP arithmetic_expression
+	| logic_expression_com '>' arithmetic_expression
+	| logic_expression_com '<' arithmetic_expression
+	| logic_expression_com GE_OP arithmetic_expression
+	| logic_expression_com LE_OP arithmetic_expression
+	| arithmetic_expression
 	;
 
 
@@ -188,7 +199,7 @@ arithmetic_expression_con
 arithmetic_expression_value
 	: IDENTIFIER
 	| CONSTANT
-	| '(' arithmetic_expression ')'
+	| '(' valued_expression ')'
 	;
 
 
