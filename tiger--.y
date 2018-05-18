@@ -182,12 +182,6 @@ sequence
 {printf("\n== '(' expression_list ')'  -->  sequence   '%s'\n", yytext);}
 	;
 
-semicolon_opt
-	: /* empty */
-{printf("\n==   -->  semicolon_opt   '%s'\n", yytext);}
-	| ";"
-{printf("\n== ';'  -->  semicolon_opt   '%s'\n", yytext);}
-	;
 
 atribution
 	: IDENTIFIER ASSIGN valued_expression
