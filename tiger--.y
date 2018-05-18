@@ -146,7 +146,9 @@ valued_sequence
 
 void_sequence
 	: '(' void_expression ';' ')' 
-{printf("\n== '(' void_expression semicolon_opt ')'  -->  void_sequence   '%s'\n", yytext);}
+{printf("\n== '(' void_expression ';' ')'  -->  void_sequence   '%s'\n", yytext);}
+	| '(' void_expression ')' 
+{printf("\n== '(' void_expression ')'  -->  void_sequence   '%s'\n", yytext);}
 	| '(' expression_list_semicolon void_expression semicolon_opt ')'
 {printf("\n== '(' expression_list_semicolon void_expression semicolon_opt ')'  -->  void_sequence   '%s'\n", yytext);}
 	| '(' semicolon_opt ')'
