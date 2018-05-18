@@ -21,15 +21,15 @@
 //extern char yylex();
 //extern int yylineno;
 //extern int column;
-/*
+
 int yywrap() {
    // open next reference or source file and start scanning
-   if((yyin = compiler->getNextFile()) != NULL) {
+   /*if((yyin = compiler->getNextFile()) != NULL) {
       yylineno = 0; // reset line counter for next source file
       return 0;
-   }
+   }*/
    return 1;
-}*/
+}
 
 void yyerror(const std::string & msg)
 {

@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <map>
-
+#include "tiger--.tab.h"
 int lineNumber = 0;
 
 std::map<std::string,int> idCount;
