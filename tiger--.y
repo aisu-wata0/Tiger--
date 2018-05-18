@@ -24,12 +24,12 @@ extern char *yytext;
 extern int yylex();
 extern int yylineno;
 //extern int column;
-   
+
 void yyerror(const std::string & msg)
 {
 	fflush(stdout);
 	std::cerr << "Error: " << msg << " in line " << yylineno << ". Token = " << yytext << std::endl;
-	
+
 	exit(1);
 }
 
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 		printf("\nParsing failed\n");
 
 	fclose(yyin);
-	
+
 	return 0;
 }
 
@@ -61,10 +61,11 @@ program
 	;
 
 declaration_list
-	: declaration declaration_list {printf("declaration declaration_list -> declaration_list %s\n", yytext);}
+	: declaration declaration_list 
+{printf("declaration declaration_list  -->  declaration_list   '%s'\n", yytext);}
 	| declaration
 	;
-	
+
 declaration
 	: declarationVar | declarationFunc
 	;
@@ -72,7 +73,7 @@ declaration
 declarationVar
 	: VAR IDENTIFIER ASSIGN valued_expression
 	;
-	
+
 declarationFunc
 	: FUNCTION IDENTIFIER '(' parameter_list ')' ASSIGN expression
 	;
@@ -80,62 +81,85 @@ declarationFunc
 expression_list
 	: expression_list_semicolon expression
 	| expression_list_semicolon
+	| expression
 	;
 
 expression_list_semicolon
-	: expression ';' expression_list
-	| expression ';'
+	: expression ';' expression_list_semicolon 
+{printf("expression ';' expression_list_semicolon  -->  expression_list_semicolon   '%s'\n", yytext);}
+	| expression ';' 
+{printf("expression  -->  expression_list_semicolon   '%s'\n", yytext);}
 	;
 
 
 expression
-	: void_expression {printf("void_expression -> expression\n");}
+	: void_expression 
+{printf("void_expression  -->  expression   '%s'\n", yytext);}
 	| valued_expression
+{printf("valued_expression  -->  expression   '%s'\n", yytext);}
 	;
 
 
 void_expression
 	: ifThenStatement
-	| whileLoop {printf("whileLoop -> void_expression\n");}
-	| atribution {printf("atribution -> void_expression\n");}
-	| void_sequence {printf("void_sequence -> void_expression\n");}
+{printf("ifThenStatement  -->  void_expression   '%s'\n", yytext);}
+	| whileLoop 
+{printf("whileLoop  -->  void_expression   '%s'\n", yytext);}
+	| atribution 
+{printf("atribution  -->  void_expression   '%s'\n", yytext);}
+	| void_sequence 
+{printf("void_sequence  -->  void_expression   '%s'\n", yytext);}
 	| functionCall
+{printf("functionCall  -->  void_expression   '%s'\n", yytext);}
 	;
 
 valued_expression
-	: logic_expression {printf("logic_expression -> valued_expression %s\n", yytext);}
-	| valued_sequence {printf("valued_sequence -> valued_expression\n");}
-	| functionCall {printf("functionCall -> valued_expression\n");}
+	: logic_expression 
+{printf("logic_expression  -->  valued_expression   '%s'\n", yytext);}
+	| valued_sequence 
+{printf("valued_sequence  -->  valued_expression   '%s'\n", yytext);}
+	| functionCall 
+{printf("functionCall  -->  valued_expression   '%s'\n", yytext);}
 	;
-	
-valued_sequence	
+
+valued_sequence
 	: '(' expression_list_semicolon valued_expression semicolon_opt ')'
+{printf("'(' expression_list_semicolon valued_expression semicolon_opt ')'  -->  valued_sequence   '%s'\n", yytext);}
 	| '(' valued_expression semicolon_opt ')'
+{printf("'(' valued_expression semicolon_opt ')'  -->  valued_sequence   '%s'\n", yytext);}
 	;
-	
-void_sequence	
-	: '(' expression_list_semicolon void_expression semicolon_opt ')'
-	| '(' void_expression semicolon_opt ')'
+
+void_sequence
+	: '(' void_expression semicolon_opt ')' 
+{printf("'(' void_expression semicolon_opt ')'  -->  void_sequence   '%s'\n", yytext);}
+	| '(' expression_list_semicolon void_expression semicolon_opt ')'
+{printf("'(' expression_list_semicolon void_expression semicolon_opt ')'  -->  void_sequence   '%s'\n", yytext);}
 	| '(' semicolon_opt ')'
+{printf("'(' semicolon_opt ')'  -->  void_sequence   '%s'\n", yytext);}
 	;
 
 semicolon_opt
 	: /* empty */
+{printf("  -->  semicolon_opt   '%s'\n", yytext);}
 	| ";"
+{printf("';'  -->  semicolon_opt   '%s'\n", yytext);}
 	;
 
 atribution
 	: IDENTIFIER ASSIGN valued_expression
+{printf("IDENTIFIER ASSIGN valued_expression  -->  atribution   '%s'\n", yytext);}
 	;
 
 
 whileLoop
 	: WHILE valued_expression DO expression
+{printf("WHILE valued_expression DO expression  -->  whileLoop   '%s'\n", yytext);}
 	;
 
 
 functionCall
 	: IDENTIFIER '(' parameter_list ')'
+{printf("IDENTIFIER '(' parameter_list ')'  -->  functionCall   '%s'\n", yytext);}
 	;
 
 parameter_list
@@ -144,7 +168,7 @@ parameter_list
 	| STRING_LITERAL ',' parameter_list
 	| STRING_LITERAL
 	|
-	; 
+	;
 
 
 ifThenStatement
@@ -178,7 +202,7 @@ logic_expression
 	| logic_expression '|' logic_expression_com
 	| logic_expression_com
 	;
-	
+
 logic_expression_com
 	: logic_expression_com '=' arithmetic_expression
 	| logic_expression_com NE_OP arithmetic_expression
@@ -215,4 +239,3 @@ arithmetic_expression_value
 
 
 %%
-
