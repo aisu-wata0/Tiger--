@@ -6,7 +6,6 @@
 %token IF ELSE WHILE DO
 %token ASSIGN END LET THEN FUNCTION VAR
 %token IN
-%token UNKNOWN
 
 %start program
 
@@ -34,6 +33,14 @@ void yyerror(const std::string & msg)
 
 	exit(1);
 }
+
+void yywarn(const std::string & msg)
+{
+	fflush(stdout);
+	std::cerr << std::endl
+	<< "warning: " << msg << " in line " << yylineno << ". Token = " << yytext << std::endl;
+}
+
 
 #include "lex.yy.c"
 
