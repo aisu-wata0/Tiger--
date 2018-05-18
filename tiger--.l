@@ -6,7 +6,7 @@
 
 #include "tiger--.tab.h"
 
-#define logToken true
+#define logLex true
 
 std::map<std::string,int> idCount;
 std::map<std::string, std::string> idTable;
@@ -44,7 +44,7 @@ bad_string        \"([^"\n]|\"\")+
 }
 
 var	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 
 	idCount["var"] += 1;
@@ -52,7 +52,7 @@ var	{
 }
 
 function	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 
 	idCount["function"] += 1;
@@ -60,7 +60,7 @@ function	{
 }
 
 if	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 
 	idCount["if"] += 1;
@@ -68,7 +68,7 @@ if	{
 }
 
 then	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 
 	idCount["then"] += 1;
@@ -76,7 +76,7 @@ then	{
 }
 
 else	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 
 	idCount["else"] += 1;
@@ -84,7 +84,7 @@ else	{
 }
 
 while	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 
 	idCount["while"] += 1;
@@ -92,7 +92,7 @@ while	{
 }
 
 do	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 
 	idCount["do"] += 1;
@@ -100,7 +100,7 @@ do	{
 }
 
 let	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 
 	idCount["let"] += 1;
@@ -108,7 +108,7 @@ let	{
 }
 
 in	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 
 	idCount["in"] += 1;
@@ -116,7 +116,7 @@ in	{
 }
 
 end	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 
 	idCount["end"] += 1;
@@ -124,7 +124,7 @@ end	{
 }
 
 ":="	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 
 	idCount[":="] += 1;
@@ -132,7 +132,7 @@ end	{
 }
 
 ";"	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 
 	idCount[";"] += 1;
@@ -140,7 +140,7 @@ end	{
 }
 
 ","	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 
 	idCount[","] += 1;
@@ -148,7 +148,7 @@ end	{
 }
 
 "("	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 
 	idCount["("] += 1;
@@ -156,7 +156,7 @@ end	{
 }
 
 ")"	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 
 	idCount[")"] += 1;
@@ -164,7 +164,7 @@ end	{
 }
 
 "+"	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 
 	idCount["+"] += 1;
@@ -172,7 +172,7 @@ end	{
 }
 
 "-"	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 
 	idCount["-"] += 1;
@@ -180,7 +180,7 @@ end	{
 }
 
 "*"	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 
 	idCount["*"] += 1;
@@ -188,7 +188,7 @@ end	{
 }
 
 "/"	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 
 	idCount["/"] += 1;
@@ -196,7 +196,7 @@ end	{
 }
 
 "="	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 
 	idCount["="] += 1;
@@ -204,7 +204,7 @@ end	{
 }
 
 "<>"	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 
 	idCount["<>"] += 1;
@@ -212,7 +212,7 @@ end	{
 }
 
 ">"	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 
 	idCount[">"] += 1;
@@ -220,7 +220,7 @@ end	{
 }
 
 "<"	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 
 	idCount["<"] += 1;
@@ -228,7 +228,7 @@ end	{
 }
 
 ">="	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 
 	idCount[">="] += 1;
@@ -236,7 +236,7 @@ end	{
 }
 
 "<="	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 
 	idCount["<="] += 1;
@@ -244,7 +244,7 @@ end	{
 }
 
 "&"	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 
 	idCount["&"] += 1;
@@ -252,7 +252,7 @@ end	{
 }
 
 "|"	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 
 	idCount["|"] += 1;
@@ -260,7 +260,7 @@ end	{
 }
 
 {identifier}	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 	
 	std::string id(yytext);
@@ -280,7 +280,7 @@ end	{
 }
 
 {unsigned_integer}	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 	
 	yylval.fn = atoi(yytext);
@@ -290,7 +290,7 @@ end	{
 }
 
 {string}	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 	
 	idCount["STRING_LITERAL"] += 1;
@@ -298,20 +298,20 @@ end	{
 }
 
 {bad_string} {
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 	
 	yyerror("lexical: unclosed string");
 }
 
 {white_space}	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 	
 }/* no effect */
 
 \n	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 	
 	++yylineno;
@@ -319,7 +319,7 @@ end	{
 
 
 .	{
-	if(logToken)
+	if(logLex)
 		std::cout << yytext;
 	
 	yyerror("lexical: illegal input");
