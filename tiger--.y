@@ -86,8 +86,8 @@ declarationVar
 	;
 
 declarationFunc
-	: FUNCTION IDENTIFIER '(' parameter_list ')' ASSIGN expression
-{printf("\n== FUNCTION IDENTIFIER '(' parameter_list ')' ASSIGN expression  -->  declarationFunc   '%s'\n", yytext);}
+	: FUNCTION IDENTIFIER '(' parameter_declaration ')' ASSIGN expression
+{printf("\n== FUNCTION IDENTIFIER '(' parameter_declaration ')' ASSIGN expression  -->  declarationFunc   '%s'\n", yytext);}
 	;
 
 
@@ -180,11 +180,18 @@ whileLoop
 	;
 
 
+
 functionCall
 	: IDENTIFIER '(' parameter_list ')'
 {printf("\n== IDENTIFIER '(' parameter_list ')'  -->  functionCall   '%s'\n", yytext);}
 	;
 
+parameter_declaration 
+    : IDENTIFIER ',' parameter_declaration
+    | IDENTIFIER
+    |
+    ;
+	
 parameter_list
 	: valued_expression ',' parameter_list
 	| valued_expression
@@ -257,6 +264,7 @@ arithmetic_expression_con
 arithmetic_expression_value
 	: IDENTIFIER
 	| CONSTANT
+	| functionCall
 	| '(' valued_expression ')'
 	;
 
