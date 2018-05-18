@@ -1,0 +1,9 @@
+
+let
+  var a := 1
+  var b := 2
+in
+  a:=b;
+  a:= b * a;
+  a:= a < b;
+end

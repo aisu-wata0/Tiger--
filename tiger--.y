@@ -13,96 +13,185 @@
 %{
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <iostream>
 #include <stdio.h>
-#include "lex.yy.c"
+#include <ctype.h>
+#include <string>
 
-//extern char yytext[];
-//extern char yylex();
-//extern int yylineno;
+extern FILE *fp;
+
+extern char *yytext;
+extern int yylex();
+extern int yylineno;
 //extern int column;
-
-int yywrap() {
-   // open next reference or source file and start scanning
-   /*if((yyin = compiler->getNextFile()) != NULL) {
-      yylineno = 0; // reset line counter for next source file
-      return 0;
-   }*/
-   return 1;
-}
 
 void yyerror(const std::string & msg)
 {
 	fflush(stdout);
 	std::cerr << "Error: " << msg << " in line " << yylineno << ". Token = " << yytext << std::endl;
-	
+
 	exit(1);
 }
 
- /*
-void yyerror(char const *s)
+#include"lex.yy.c"
+
+int count=0;
+
+int main(int argc, char *argv[])
 {
-	printf("\n%*s\n%*s\n", column, "^", column, s);
+	yyin = fopen(argv[1], "r");
+
+	if(!yyparse())
+		printf("\nParsing completed\n");
+	else
+		printf("\nParsing failed\n");
+
+	fclose(yyin);
+
+	return 0;
 }
-*/
 
 %}
+
+%union {
+    char *a;
+    std::string *pStr;
+    double d;
+    int fn;
+}
 
 %%
 
 program
-	: LET declaration_list IN expressions END
+	: LET declaration_list IN expression_list END
+	| LET declaration_list IN  END
 	;
 
 declaration_list
-	: declaration declaration_list
+	: declaration declaration_list 
+{printf("\n== declaration declaration_list  -->  declaration_list   '%s'\n", yytext);}
 	| declaration
+{printf("\n== declaration  -->  declaration_list   '%s'\n", yytext);}
 	;
-	
+
 declaration
-	: declarationVar | declarationFunc
+	: declarationVar
+	| declarationFunc
 	;
 
 declarationVar
 	: VAR IDENTIFIER ASSIGN valued_expression
-	;
-	
-declarationFunc
-	: FUNCTION IDENTIFIER '(' parameters ')' ASSIGN expression
+{printf("\n== VAR IDENTIFIER ASSIGN valued_expression  -->  declarationVar   '%s'\n", yytext);}
 	;
 
-expressions
-	: expression expressions
-	| expression
+declarationFunc
+	: FUNCTION IDENTIFIER '(' parameter_list ')' ASSIGN expression
+{printf("\n== FUNCTION IDENTIFIER '(' parameter_list ')' ASSIGN expression  -->  declarationFunc   '%s'\n", yytext);}
 	;
+
+
+
+expression_list
+	: expression ';' expression_list
+{printf("\n==  expression ';' expression_list  -->  expression_list   '%s'\n", yytext);}
+	| whileLoop expression_list
+{printf("\n==  whileLoop expression_list  -->  expression_list   '%s'\n", yytext);}
+	| ifThenStatement expression_list
+{printf("\n==  ifThenStatement expression_list  -->  expression_list   '%s'\n", yytext);}
+	| expression ';'
+{printf("\n== expression ';'  -->  expression_list   '%s'\n", yytext);}
+	| expression
+{printf("\n== expression  -->  expression_list   '%s'\n", yytext);}
+	| // empty
+{printf("\n==   -->  expression_list   '%s'\n", yytext);}
+	;
+
+
+/*
+expression_list
+	: expression_list_semicolon expression
+{printf("\n== expression_list_semicolon expression  -->  expression_list   '%s'\n", yytext);}
+	| expression_list_semicolon
+{printf("\n== expression_list_semicolon  -->  expression_list   '%s'\n", yytext);}
+	| expression
+{printf("\n== expression  -->  expression_list   '%s'\n", yytext);}
+	| // empty
+{printf("\n==   -->  expression_list   '%s'\n", yytext);}
+	;
+
+expression_list_semicolon
+	: expression ';' expression_list_semicolon 
+{printf("\n== expression ';' expression_list_semicolon  -->  expression_list_semicolon   '%s'\n", yytext);}
+	| expression ';' 
+{printf("\n== expression  -->  expression_list_semicolon   '%s'\n", yytext);}
+	;
+*/
 
 expression
-	: atribution
-	| ifThenStatement
-	| whileLoop
-	| functionCall
-	| '(' parameters ')'
+	: void_expression 
+{printf("\n== void_expression  -->  expression   '%s'\n", yytext);}
+	| valued_expression
+{printf("\n== valued_expression  -->  expression   '%s'\n", yytext);}
 	;
 
 
+void_expression
+	: ifThenStatement
+{printf("\n== ifThenStatement  -->  void_expression   '%s'\n", yytext);}
+	| whileLoop 
+{printf("\n== whileLoop  -->  void_expression   '%s'\n", yytext);}
+	| atribution 
+{printf("\n== atribution  -->  void_expression   '%s'\n", yytext);}
+	| ';'
+{printf("\n== ';'  -->  void_expression   '%s'\n", yytext);}
+	;
+
+valued_expression
+	: logic_expression 
+{printf("\n== logic_expression  -->  valued_expression   '%s'\n", yytext);}
+	| functionCall
+{printf("\n== functionCall  -->  valued_expression   '%s'\n", yytext);}
+	| sequence
+{printf("\n== sequence  -->  valued_expression   '%s'\n", yytext);}
+	;
+
+sequence
+	: '(' expression_list ')'
+{printf("\n== '(' expression_list ')'  -->  sequence   '%s'\n", yytext);}
+	;
+
+semicolon_opt
+	: /* empty */
+{printf("\n==   -->  semicolon_opt   '%s'\n", yytext);}
+	| ";"
+{printf("\n== ';'  -->  semicolon_opt   '%s'\n", yytext);}
+	;
+
 atribution
-	: IDENTIFIER ASSIGN valued_expression ';'
+	: IDENTIFIER ASSIGN valued_expression
+{printf("\n== IDENTIFIER ASSIGN valued_expression  -->  atribution   '%s'\n", yytext);}
 	;
 
 
 whileLoop
 	: WHILE valued_expression DO expression
+{printf("\n== WHILE valued_expression DO expression  -->  whileLoop   '%s'\n", yytext);}
 	;
 
 
 functionCall
-	: IDENTIFIER '(' parameters ')' ';'
+	: IDENTIFIER '(' parameter_list ')'
+{printf("\n== IDENTIFIER '(' parameter_list ')'  -->  functionCall   '%s'\n", yytext);}
 	;
 
-parameters
-	: valued_expression ',' valued_expression
+parameter_list
+	: valued_expression ',' parameter_list
 	| valued_expression
-	; 
+	| STRING_LITERAL ',' parameter_list
+	| STRING_LITERAL
+	|
+	;
 
 
 ifThenStatement
@@ -131,33 +220,20 @@ ifThen
  /**/
 
 
-
-valued_expression
-	: arithmetic_expression
-	| logic_expression
-	;
-
-
 logic_expression
 	: logic_expression '&' logic_expression_com
 	| logic_expression '|' logic_expression_com
 	| logic_expression_com
 	;
-	
+
 logic_expression_com
-	: logic_expression_com '=' logic_expression_st
-	| logic_expression_com NE_OP logic_expression_st
-	| logic_expression_com '>' logic_expression_st
-	| logic_expression_com '<' logic_expression_st
-	| logic_expression_com GE_OP logic_expression_st
-	| logic_expression_com LE_OP logic_expression_st
-	| logic_expression_st
-	;
-	
-logic_expression_st
-	: IDENTIFIER
-	| CONSTANT
-	| '(' logic_expression ')'
+	: logic_expression_com '=' arithmetic_expression
+	| logic_expression_com NE_OP arithmetic_expression
+	| logic_expression_com '>' arithmetic_expression
+	| logic_expression_com '<' arithmetic_expression
+	| logic_expression_com GE_OP arithmetic_expression
+	| logic_expression_com LE_OP arithmetic_expression
+	| arithmetic_expression
 	;
 
 
@@ -181,8 +257,9 @@ arithmetic_expression_con
 arithmetic_expression_value
 	: IDENTIFIER
 	| CONSTANT
-	| '(' arithmetic_expression ')'
+	| '(' valued_expression ')'
 	;
 
 
 %%
+
