@@ -63,10 +63,14 @@ int main(int argc, char *argv[])
 }
 
 %%
+letStatement
+    : LET declaration_list IN expression_list END 
+{printf("\n==  LET declaration_list IN expression_list END -->  letStatement   '%s'\n", yytext);}	
+    ;
 
 program
-	: LET declaration_list IN expression_list END
-	| LET declaration_list IN  END
+	: letStatement
+{printf("\n==  letStatement -->  program   '%s'\n", yytext);}	
 	;
 
 declaration_list
@@ -74,6 +78,7 @@ declaration_list
 {printf("\n== declaration declaration_list  -->  declaration_list   '%s'\n", yytext);}
 	| declaration
 {printf("\n== declaration  -->  declaration_list   '%s'\n", yytext);}
+	| //empty
 	;
 
 declaration
@@ -155,6 +160,8 @@ valued_expression
 {printf("\n== functionCall  -->  valued_expression   '%s'\n", yytext);}
 	| sequence
 {printf("\n== sequence  -->  valued_expression   '%s'\n", yytext);}
+    | letStatement
+{printf("\n== letStatement  -->  valued_expression   '%s'\n", yytext);}
 	;
 
 sequence
@@ -206,6 +213,7 @@ ifThenStatement
 	: ifThenElse
 	| ifThen
 	;
+
 
 ifThenElse
 	: IF valued_expression THEN expression ELSE expression
