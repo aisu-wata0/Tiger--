@@ -18,4 +18,4 @@ yacc: tiger--.y
 	bison -d $(YACCFLAGS) tiger--.y
 	
 clean:
-	rm *.tab.h *.tab.c lex.yy.c $(PROGRAM)
+	rm -f *.tab.h *.tab.c lex.yy.c $(PROGRAM)
