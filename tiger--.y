@@ -98,7 +98,9 @@ expression_list
 	| whileLoop expression_list
 {printf("\n==  whileLoop expression_list  -->  expression_list   '%s'\n", yytext);}
 	| ifThenStatement expression_list
-{printf("\n==  whileLoop expression_list  -->  expression_list   '%s'\n", yytext);}
+{printf("\n==  ifThenStatement expression_list  -->  expression_list   '%s'\n", yytext);}
+	| expression ';'
+{printf("\n== expression ';'  -->  expression_list   '%s'\n", yytext);}
 	| expression
 {printf("\n== expression  -->  expression_list   '%s'\n", yytext);}
 	| // empty
