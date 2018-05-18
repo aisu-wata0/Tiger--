@@ -141,15 +141,17 @@ void_expression
 {printf("\n== whileLoop  -->  void_expression   '%s'\n", yytext);}
 	| atribution 
 {printf("\n== atribution  -->  void_expression   '%s'\n", yytext);}
+	| ';'
+{printf("\n== ';'  -->  void_expression   '%s'\n", yytext);}
 	;
 
 valued_expression
 	: logic_expression 
 {printf("\n== logic_expression  -->  valued_expression   '%s'\n", yytext);}
 	| functionCall
-{printf("\n== functionCall  -->  expression   '%s'\n", yytext);}
+{printf("\n== functionCall  -->  valued_expression   '%s'\n", yytext);}
 	| sequence
-{printf("\n== sequence  -->  expression   '%s'\n", yytext);}
+{printf("\n== sequence  -->  valued_expression   '%s'\n", yytext);}
 	;
 
 sequence
