@@ -37,11 +37,10 @@ bad_string        \"([^"\n]|\"\")+
 <C_COMMENT>"/*"			{} // ignore nested comments
 <C_COMMENT>[^*/\n]+		// ignore
 <C_COMMENT>\n			++yylineno;
-<C_COMMENT><<EOF>>		yyerror("EOF in comment");
+<C_COMMENT><<EOF>>		yyerror("lexical: unclosed comment");
 
 "*/"	{ // Unopened comment
-	idCount["UNKNOWN"] += 1;
-	return(UNKNOWN);
+	yyerror("lexical: unopened comment");
 }
 
 var	{
@@ -298,6 +297,13 @@ end	{
 	return(STRING_LITERAL);
 }
 
+{bad_string} {
+	if(logToken)
+		std::cout << yytext;
+	
+	yyerror("lexical: unclosed string");
+}
+
 {white_space}	{
 	if(logToken)
 		std::cout << yytext;
@@ -312,23 +318,19 @@ end	{
 }
 
 
- /*.	yyerror("Illegal input"); */
-
 .	{
 	if(logToken)
 		std::cout << yytext;
 	
-	idCount["UNKNOWN"] += 1;
-	return(UNKNOWN);
+	yyerror("lexical: illegal input");
 }
 
 
 %%
 
 /*
-int mein()
+int main()
 {
-	
 	yylex();
 	
 	for(auto it = idCount.begin(); it != idCount.end() ; ++it){
