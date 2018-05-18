@@ -5,6 +5,8 @@ LIB		=  -lfl -ly
 
 PROGRAM	= yacc.exe
 
+YACCFLAGS = --debug --verbose
+
 
 $(PROGRAM): lex yacc
 	$(CC) -O0 -g tiger--.tab.c $(LIB) -o $(PROGRAM);
@@ -13,7 +15,7 @@ lex: tiger--.l
 	flex tiger--.l
 
 yacc: tiger--.y
-	bison -d tiger--.y
+	bison -d $(YACCFLAGS) tiger--.y
 	
 clean:
 	rm *.tab.h *.tab.c lex.yy.c $(PROGRAM)
