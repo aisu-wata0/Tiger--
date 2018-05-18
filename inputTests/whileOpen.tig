@@ -3,6 +3,6 @@ let
 in
 	while (a*b > 0) do
 	(
-		a := a - 1;
+		a := a - 1
 	)
 end

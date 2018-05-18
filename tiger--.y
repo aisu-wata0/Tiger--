@@ -17,6 +17,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <ctype.h>
+#include <string>
 
 extern FILE *fp;
 
@@ -53,6 +54,13 @@ int main(int argc, char *argv[])
 
 %}
 
+%union {
+    char *a;
+    std::string *pStr;
+    double d;
+    int fn;
+}
+
 %%
 
 program
@@ -62,104 +70,111 @@ program
 
 declaration_list
 	: declaration declaration_list 
-{printf("declaration declaration_list  -->  declaration_list   '%s'\n", yytext);}
+{printf("\n== declaration declaration_list  -->  declaration_list   '%s'\n", yytext);}
 	| declaration
+{printf("\n== declaration  -->  declaration_list   '%s'\n", yytext);}
 	;
 
 declaration
-	: declarationVar | declarationFunc
+	: declarationVar
+	| declarationFunc
 	;
 
 declarationVar
 	: VAR IDENTIFIER ASSIGN valued_expression
+{printf("\n== VAR IDENTIFIER ASSIGN valued_expression  -->  declarationVar   '%s'\n", yytext);}
 	;
 
 declarationFunc
 	: FUNCTION IDENTIFIER '(' parameter_list ')' ASSIGN expression
+{printf("\n== FUNCTION IDENTIFIER '(' parameter_list ')' ASSIGN expression  -->  declarationFunc   '%s'\n", yytext);}
 	;
 
 expression_list
 	: expression_list_semicolon expression
+{printf("\n== expression_list_semicolon expression  -->  expression_list   '%s'\n", yytext);}
 	| expression_list_semicolon
+{printf("\n== expression_list_semicolon  -->  expression_list   '%s'\n", yytext);}
 	| expression
+{printf("\n== expression  -->  expression_list   '%s'\n", yytext);}
 	;
 
 expression_list_semicolon
 	: expression ';' expression_list_semicolon 
-{printf("expression ';' expression_list_semicolon  -->  expression_list_semicolon   '%s'\n", yytext);}
+{printf("\n== expression ';' expression_list_semicolon  -->  expression_list_semicolon   '%s'\n", yytext);}
 	| expression ';' 
-{printf("expression  -->  expression_list_semicolon   '%s'\n", yytext);}
+{printf("\n== expression  -->  expression_list_semicolon   '%s'\n", yytext);}
 	;
 
 
 expression
 	: void_expression 
-{printf("void_expression  -->  expression   '%s'\n", yytext);}
+{printf("\n== void_expression  -->  expression   '%s'\n", yytext);}
 	| valued_expression
-{printf("valued_expression  -->  expression   '%s'\n", yytext);}
+{printf("\n== valued_expression  -->  expression   '%s'\n", yytext);}
 	;
 
 
 void_expression
 	: ifThenStatement
-{printf("ifThenStatement  -->  void_expression   '%s'\n", yytext);}
+{printf("\n== ifThenStatement  -->  void_expression   '%s'\n", yytext);}
 	| whileLoop 
-{printf("whileLoop  -->  void_expression   '%s'\n", yytext);}
+{printf("\n== whileLoop  -->  void_expression   '%s'\n", yytext);}
 	| atribution 
-{printf("atribution  -->  void_expression   '%s'\n", yytext);}
+{printf("\n== atribution  -->  void_expression   '%s'\n", yytext);}
 	| void_sequence 
-{printf("void_sequence  -->  void_expression   '%s'\n", yytext);}
+{printf("\n== void_sequence  -->  void_expression   '%s'\n", yytext);}
 	| functionCall
-{printf("functionCall  -->  void_expression   '%s'\n", yytext);}
+{printf("\n== functionCall  -->  void_expression   '%s'\n", yytext);}
 	;
 
 valued_expression
 	: logic_expression 
-{printf("logic_expression  -->  valued_expression   '%s'\n", yytext);}
+{printf("\n== logic_expression  -->  valued_expression   '%s'\n", yytext);}
 	| valued_sequence 
-{printf("valued_sequence  -->  valued_expression   '%s'\n", yytext);}
+{printf("\n== valued_sequence  -->  valued_expression   '%s'\n", yytext);}
 	| functionCall 
-{printf("functionCall  -->  valued_expression   '%s'\n", yytext);}
+{printf("\n== functionCall  -->  valued_expression   '%s'\n", yytext);}
 	;
 
 valued_sequence
 	: '(' expression_list_semicolon valued_expression semicolon_opt ')'
-{printf("'(' expression_list_semicolon valued_expression semicolon_opt ')'  -->  valued_sequence   '%s'\n", yytext);}
+{printf("\n== '(' expression_list_semicolon valued_expression semicolon_opt ')'  -->  valued_sequence   '%s'\n", yytext);}
 	| '(' valued_expression semicolon_opt ')'
-{printf("'(' valued_expression semicolon_opt ')'  -->  valued_sequence   '%s'\n", yytext);}
+{printf("\n== '(' valued_expression semicolon_opt ')'  -->  valued_sequence   '%s'\n", yytext);}
 	;
 
 void_sequence
-	: '(' void_expression semicolon_opt ')' 
-{printf("'(' void_expression semicolon_opt ')'  -->  void_sequence   '%s'\n", yytext);}
+	: '(' void_expression ';' ')' 
+{printf("\n== '(' void_expression semicolon_opt ')'  -->  void_sequence   '%s'\n", yytext);}
 	| '(' expression_list_semicolon void_expression semicolon_opt ')'
-{printf("'(' expression_list_semicolon void_expression semicolon_opt ')'  -->  void_sequence   '%s'\n", yytext);}
+{printf("\n== '(' expression_list_semicolon void_expression semicolon_opt ')'  -->  void_sequence   '%s'\n", yytext);}
 	| '(' semicolon_opt ')'
-{printf("'(' semicolon_opt ')'  -->  void_sequence   '%s'\n", yytext);}
+{printf("\n== '(' semicolon_opt ')'  -->  void_sequence   '%s'\n", yytext);}
 	;
 
 semicolon_opt
 	: /* empty */
-{printf("  -->  semicolon_opt   '%s'\n", yytext);}
+{printf("\n==   -->  semicolon_opt   '%s'\n", yytext);}
 	| ";"
-{printf("';'  -->  semicolon_opt   '%s'\n", yytext);}
+{printf("\n== ';'  -->  semicolon_opt   '%s'\n", yytext);}
 	;
 
 atribution
 	: IDENTIFIER ASSIGN valued_expression
-{printf("IDENTIFIER ASSIGN valued_expression  -->  atribution   '%s'\n", yytext);}
+{printf("\n== IDENTIFIER ASSIGN valued_expression  -->  atribution   '%s'\n", yytext);}
 	;
 
 
 whileLoop
 	: WHILE valued_expression DO expression
-{printf("WHILE valued_expression DO expression  -->  whileLoop   '%s'\n", yytext);}
+{printf("\n== WHILE valued_expression DO expression  -->  whileLoop   '%s'\n", yytext);}
 	;
 
 
 functionCall
 	: IDENTIFIER '(' parameter_list ')'
-{printf("IDENTIFIER '(' parameter_list ')'  -->  functionCall   '%s'\n", yytext);}
+{printf("\n== IDENTIFIER '(' parameter_list ')'  -->  functionCall   '%s'\n", yytext);}
 	;
 
 parameter_list
