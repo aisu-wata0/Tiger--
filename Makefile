@@ -1,17 +1,21 @@
 
 CC		= g++ -std=c++11
 
-LIB		=  -lfl -ll
+LIB		=  -lfl -ly
 
-all: syntax lex
-	$(CC) -O0 -g $(LIB) tiger--.tab.c -o yacc ;
-	#$(CC) -O3 $(LIB) lex.yy.c -o lex;
+PROGRAM	= parser.exe
+
+YACCFLAGS = --debug --verbose
+
+
+$(PROGRAM): lex yacc
+	$(CC) -O0 -g tiger--.tab.c $(LIB) -o $(PROGRAM);
 
 lex: tiger--.l
 	flex tiger--.l
 
-syntax: tiger--.y
-	bison -d tiger--.y
+yacc: tiger--.y
+	bison -d $(YACCFLAGS) tiger--.y
 	
 clean:
-	rm *.tab.h *.tab.c lex.yy.c
+	rm -f *.tab.h *.tab.c lex.yy.c $(PROGRAM)
