@@ -3,7 +3,7 @@ CC		= g++ -std=c++11
 
 LIB		=  -lfl -ly
 
-PROGRAM	= yacc.exe
+PROGRAM	= parser.exe
 
 YACCFLAGS = --debug --verbose
 
