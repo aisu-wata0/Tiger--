@@ -72,7 +72,13 @@ int main(int argc, char *argv[])
 %%
 letStatement
     : LET declaration_list IN expression_list END 
-{printf("\n==  LET declaration_list IN expression_list END -->  letStatement   '%s'\n", yytext);}	
+{printf("\n==  LET declaration_list IN expression_list END -->  letStatement   '%s'\n", yytext);}
+	| VAR 
+{yyerror("syntax: missing let");}
+	| LET declaration_list expression
+{yyerror("syntax: missing in");}
+	| LET declaration_list IN expression_list 
+{yyerror("syntax: missing end");}	
     ;
 
 program
