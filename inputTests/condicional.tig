@@ -1,0 +1,29 @@
+let
+    var n := 0     /* o numero    */
+    var f := 1     /* o fatorial  */
+    var i := 2     /* um contador */
+    
+in
+
+    
+/*
+	if (f|i&n) then
+		n:=-n;		/* if then simples nao retorna valor */
+	
+	
+    /*printf("\nfatorial de %d = %d\n", n, f)    printf nao retorna valor */
+    printf("\nfatorial de %d = %d\n", n, f);
+     while i <= n do
+    (
+            f := f * i;
+            i := i + 1;	/*while nao retorna valor*/
+    )
+    
+    
+	if (n>0) then  
+		(n:=0;n:=-n;printf("\nfatorial de %d = %d\n", n, f))    /* retorna valor */
+	else 
+		n:=9000; /* retorna valor de mesmo tipo que o do if then */
+	
+
+end
