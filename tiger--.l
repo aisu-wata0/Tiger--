@@ -37,10 +37,12 @@ bad_string        \"([^"\n]|\"\")+
 <C_COMMENT>"/*"			{} // ignore nested comments
 <C_COMMENT>[^*/\n]+		// ignore
 <C_COMMENT>\n			++yylineno;
-<C_COMMENT><<EOF>>		yyerror("EOF in comment");
+<C_COMMENT><<EOF>>		yyerror("lexical: unclosed comment");
 
 "*/"	{ // Unopened comment
 	idCount["UNKNOWN"] += 1;
+	
+	yyerror("lexical: unopened comment");
 	return(UNKNOWN);
 }
 
@@ -312,12 +314,11 @@ end	{
 }
 
 
- /*.	yyerror("Illegal input"); */
-
 .	{
 	if(logToken)
 		std::cout << yytext;
 	
+	yyerror("lexical: illegal input");
 	idCount["UNKNOWN"] += 1;
 	return(UNKNOWN);
 }
