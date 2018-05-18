@@ -56,11 +56,12 @@ int main(int argc, char *argv[])
 %%
 
 program
-	: LET declaration_list IN expression_sequence END
+	: LET declaration_list IN expression_list END
+	| LET declaration_list IN  END
 	;
 
 declaration_list
-	: declaration declaration_list
+	: declaration declaration_list {printf("declaration declaration_list -> declaration_list %s\n", yytext);}
 	| declaration
 	;
 	
@@ -76,44 +77,44 @@ declarationFunc
 	: FUNCTION IDENTIFIER '(' parameter_list ')' ASSIGN expression
 	;
 
-expression_sequence
-	: expression_list expression
-	| expression_list
+expression_list
+	: expression_list_semicolon expression
+	| expression_list_semicolon
 	;
 
-expression_list
+expression_list_semicolon
 	: expression ';' expression_list
 	| expression ';'
 	;
 
 
 expression
-	: void_expression
+	: void_expression {printf("void_expression -> expression\n");}
 	| valued_expression
 	;
 
 
 void_expression
 	: ifThenStatement
-	| whileLoop
-	| atribution
-	| void_sequence
+	| whileLoop {printf("whileLoop -> void_expression\n");}
+	| atribution {printf("atribution -> void_expression\n");}
+	| void_sequence {printf("void_sequence -> void_expression\n");}
 	| functionCall
 	;
 
 valued_expression
-	: logic_expression
-	| valued_sequence
-	| functionCall
+	: logic_expression {printf("logic_expression -> valued_expression %s\n", yytext);}
+	| valued_sequence {printf("valued_sequence -> valued_expression\n");}
+	| functionCall {printf("functionCall -> valued_expression\n");}
 	;
 	
 valued_sequence	
-	: '(' expression_list valued_expression semicolon_opt ')'
+	: '(' expression_list_semicolon valued_expression semicolon_opt ')'
 	| '(' valued_expression semicolon_opt ')'
 	;
 	
 void_sequence	
-	: '(' expression_list void_expression semicolon_opt ')'
+	: '(' expression_list_semicolon void_expression semicolon_opt ')'
 	| '(' void_expression semicolon_opt ')'
 	| '(' semicolon_opt ')'
 	;
