@@ -6,7 +6,6 @@
 %token IF ELSE WHILE DO
 %token ASSIGN END LET THEN FUNCTION VAR
 %token IN
-%token UNKNOWN
 
 %start program
 
@@ -31,12 +30,21 @@ extern int yylineno;
 void yyerror(const std::string & msg)
 {
 	fflush(stdout);
-	std::cerr << "Error: " << msg << " in line " << yylineno << ". Token = " << yytext << std::endl;
+	std::cerr << std::endl
+	<< "error: " << msg << " in line " << yylineno << ". Token = " << yytext << std::endl;
 
 	exit(1);
 }
 
-#include"lex.yy.c"
+void yywarn(const std::string & msg)
+{
+	fflush(stdout);
+	std::cerr << std::endl
+	<< "warning: " << msg << " in line " << yylineno << ". Token = " << yytext << std::endl;
+}
+
+
+#include "lex.yy.c"
 
 int count=0;
 
@@ -76,10 +84,20 @@ int main(int argc, char *argv[])
 %type <pStr> arithmetic_expression_value;
 
 %%
+letStatement
+    : LET declaration_list IN expression_list END 
+{printf("\n==  LET declaration_list IN expression_list END -->  letStatement   '%s'\n", yytext);}
+	| VAR 
+{yyerror("syntax: missing let");}
+	| LET declaration_list expression
+{yyerror("syntax: missing in");}
+	| LET declaration_list IN expression_list 
+{yyerror("syntax: missing end");}	
+    ;
 
 program
-	: LET declaration_list IN expression_list END
-	| LET declaration_list IN  END
+	: letStatement
+{printf("\n==  letStatement -->  program   '%s'\n", yytext);}	
 	;
 
 declaration_list
@@ -88,6 +106,7 @@ declaration_list
 {if(logToken)printf("\n== declaration declaration_list  -->  declaration_list   '%s'\n", yytext);}
 	| declaration
 {if(logToken)printf("\n== declaration  -->  declaration_list   '%s'\n", yytext);}
+	| //empty
 	;
 
 declaration
@@ -169,6 +188,8 @@ valued_expression
 {if(logToken)printf("\n== functionCall  -->  valued_expression   '%s'\n", yytext);}
 	| sequence
 {if(logToken)printf("\n== sequence  -->  valued_expression   '%s'\n", yytext);}
+    | letStatement
+{printf("\n== letStatement  -->  valued_expression   '%s'\n", yytext);}
 	;
 
 sequence
@@ -176,12 +197,7 @@ sequence
 {if(logToken)printf("\n== '(' expression_list ')'  -->  sequence   '%s'\n", yytext);}
 	;
 
-semicolon_opt
-	: /* empty */
-{if(logToken)printf("\n==   -->  semicolon_opt   '%s'\n", yytext);}
-	| ";"
-{if(logToken)printf("\n== ';'  -->  semicolon_opt   '%s'\n", yytext);}
-	;
+
 
 atribution
 	: IDENTIFIER ASSIGN valued_expression
@@ -228,6 +244,7 @@ ifThenStatement
 	| ifThen
 {if(logToken)printf("\n== ifThen --> ifThenStatement	'%s'\n",yytext);}
 	;
+
 
 ifThenElse
 	: IF valued_expression THEN expression ELSE expression
