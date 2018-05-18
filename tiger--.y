@@ -29,12 +29,13 @@ extern int yylineno;
 void yyerror(const std::string & msg)
 {
 	fflush(stdout);
-	std::cerr << "Error: " << msg << " in line " << yylineno << ". Token = " << yytext << std::endl;
+	std::cerr << std::endl
+	<< "error: " << msg << " in line " << yylineno << ". Token = " << yytext << std::endl;
 
 	exit(1);
 }
 
-#include"lex.yy.c"
+#include "lex.yy.c"
 
 int count=0;
 
