@@ -54,12 +54,24 @@ int main(int argc, char *argv[])
 
 %}
 
-%union {
+%union{
     char *a;
     std::string *pStr;
     double d;
-    int fn;
+    int fn; 
 }
+
+%type <pStr> logic_expression;
+
+%type <pStr> logic_expression_com;
+
+%type <pStr> arithmetic_expression;
+
+%type <pStr> arithmetic_expression_md;
+
+%type <pStr> arithmetic_expression_con;
+
+%type <pStr> arithmetic_expression_value;
 
 %%
 
@@ -188,30 +200,40 @@ functionCall
 
 parameter_declaration 
     : IDENTIFIER ',' parameter_declaration
+{printf("\n== IDENTIFIER ',' parameter_declaration --> parameter_declaration	'%s'\n",yytext);}
     | IDENTIFIER
+{printf("\n== IDENTIFIER --> parameter_declaration	'%s'\n",yytext);}
     |
     ;
 	
 parameter_list
 	: valued_expression ',' parameter_list
+{printf("\n== valued_expression ',' parameter_list --> parameter_list	'%s'\n",yytext);}
 	| valued_expression
+{printf("\n== valued_expression --> parameter_list '%s'\n",yytext);}
 	| STRING_LITERAL ',' parameter_list
+{printf("\n== STRING LITERAL ',' parameter_list --> parameter_list	'%s'\n",yytext);}
 	| STRING_LITERAL
+{printf("\n== STRING LITERAL --> parameter_list	'%s'\n",yytext);}
 	|
 	;
 
 
 ifThenStatement
 	: ifThenElse
+{printf("\n== ifThenElse --> ifThenStatement	'%s'\n",yytext);}
 	| ifThen
+{printf("\n== ifThen --> ifThenStatement	'%s'\n",yytext);}
 	;
 
 ifThenElse
 	: IF valued_expression THEN expression ELSE expression
+{printf("\n== IF valued_expression THEN expression ELSE expression --> ifThenElse	'%s'\n",yytext);}
 	;
 
 ifThen
 	: IF valued_expression THEN expression
+{printf("\n== IF valued_expression THEN expression --> ifThen	'%s'\n",yytext);}
 	;
 
  /**
@@ -229,43 +251,64 @@ ifThen
 
 logic_expression
 	: logic_expression '&' logic_expression_com
+{printf("\n== %s '&' %s --> logic_expression	'%s'\n",$1->c_str(),$3->c_str(),yytext);}
 	| logic_expression '|' logic_expression_com
+{printf("\n== %s '|' %s --> logic_expression	'%s'\n",$1->c_str(),$3->c_str(),yytext);}
 	| logic_expression_com
 	;
 
 logic_expression_com
 	: logic_expression_com '=' arithmetic_expression
+{printf("\n== %s '&' %s --> logic_expression_com	'%s'\n",$1->c_str(),$3->c_str(),yytext);}
 	| logic_expression_com NE_OP arithmetic_expression
+{printf("\n== %s NE_OP %s --> logic_expression_com	'%s'\n",$1->c_str(),$3->c_str(),yytext);}
 	| logic_expression_com '>' arithmetic_expression
+{printf("\n== %s '>' %s --> logic_expression_com	'%s'\n",$1->c_str(),$3->c_str(),yytext);}
 	| logic_expression_com '<' arithmetic_expression
+{printf("\n== %s '<' %s --> logic_expression_com	'%s'\n",$1->c_str(),$3->c_str(),yytext);}
 	| logic_expression_com GE_OP arithmetic_expression
+{printf("\n== %s GE_OP %s --> logic_expression_com	'%s'\n",$1->c_str(),$3->c_str(),yytext);}
 	| logic_expression_com LE_OP arithmetic_expression
+{printf("\n== %s LE_OP %s --> logic_expression_com	'%s'\n",$1->c_str(),$3->c_str(),yytext);}
 	| arithmetic_expression
+{printf("\n== %s --> logic_expression_com	'%s'\n",$1->c_str(),yytext);}
 	;
 
 
 arithmetic_expression
 	: arithmetic_expression '+' arithmetic_expression_md
+{printf("\n== %s '+' %s --> arithmetic_expression	'%s'\n",$1->c_str(),$3->c_str(),yytext);}
 	| arithmetic_expression '-' arithmetic_expression_md
+{printf("\n== %s '-' %s --> arithmetic_expression	'%s'\n",$1->c_str(),$3->c_str(),yytext);}
 	| arithmetic_expression_md
+{printf("\n== %s --> arithmetic_expression	'%s'\n",$1->c_str(),yytext);}
 	;
 
 arithmetic_expression_md
 	: arithmetic_expression_md '*' arithmetic_expression_con
+{printf("\n== %s '*' %s --> arithmetic_expression_md	'%s'\n",$1->c_str(),$3->c_str(),yytext);}
 	| arithmetic_expression_md '/' arithmetic_expression_con
+{printf("\n== %s '/' %s --> arithmetic_expression_md	'%s'\n",$1->c_str(),$3->c_str(),yytext);}
 	| arithmetic_expression_con
-	;
+{printf("\n== %s --> arithmetic_expression_md	'%s'\n",$1->c_str(),yytext);}
+	;	
 
 arithmetic_expression_con
 	: '-' arithmetic_expression_value
+{printf("\n== '-' %s --> arithmetic_expression_con	'%s'\n",$2->c_str(),yytext);}
 	| arithmetic_expression_value
+{printf("\n== %s --> arithmetic_expression_con	'%s'\n",$1->c_str(),yytext);}
 	;
 
 arithmetic_expression_value
 	: IDENTIFIER
+{printf("\n== IDENTIFIER --> arithmetic_expression_value	'%s'\n",yytext);}
 	| CONSTANT
+{printf("\n== CONSTANT --> arithmetic_expression_value	'%s'\n",yytext);}
 	| functionCall
+{printf("\n== functionCall --> arithmetic_expression_value	'%s'\n",yytext);}
 	| '(' valued_expression ')'
+{printf("\n== '(' valued_expression ')' --> arithmetic_expression_value	'%s'\n",yytext);}
 	;
 
 
