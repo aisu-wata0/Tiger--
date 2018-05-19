@@ -371,13 +371,6 @@ pushChilds1($$, $1);
 $$->type = $1->type;
 }
 
-	| // empty
-{if(logSyntax)std::cout << "\n==   -->  expression_list \t\tnext token:'" << yytext << std::endl;
-$$ = new STNodeExp;
-$$->str = std::move(std::string(""));
-$$->type = Type::Void;
-}
-
 	;
 
 
@@ -406,8 +399,10 @@ void_expression
 {if(logSyntax)std::cout << "\n== atribution  -->  void_expression \t\tnext token:'" << yytext << std::endl;
 }
 
-	| ';'
-{if(logSyntax)std::cout << "\n== ';'  -->  void_expression \t\tnext token:'" << yytext << std::endl;
+	| // empty
+{if(logSyntax)std::cout << "\n==   -->  void_expression \t\tnext token:'" << yytext << std::endl;
+$$ = new STNode;
+$$->str = std::move(std::string(""));
 }
 
 	;
