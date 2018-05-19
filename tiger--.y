@@ -201,7 +201,10 @@ int main(int argc, char *argv[])
 program
 	: letStatement
 {std::cout << "\n==  letStatement -->  program \t\tnext token:'" << yytext << std::endl;
+std::cout << "\n";
+std::cout << "digraph G {" << std::endl;
 $1->printChilds();
+std::cout << "}" << std::endl;
 }
 
 	;

@@ -12,14 +12,15 @@ std::map<std::string,int> idCount;
 std::map<std::string, Id> idTable;
 
 template <class T>
-inline T* tokenFound(){
+inline T* tokenFound(bool text = true){
 	if(logLex)
 		std::cout << yytext;
 	
 	T *pNode = new T;
 	yylval.Node = (STNode*)pNode;
 	
-	pNode->str = std::move(std::string(yytext));
+	if(text)
+		pNode->str = std::move(std::string(yytext));
 	
 	return pNode;
 }
@@ -276,7 +277,14 @@ end	{
 }
 
 {string}	{
-	tokenFound<STNode>();
+	tokenFound<STNode>(false);
+	
+	std::string txt(yytext);
+	
+	std::ostringstream cleanedStr;
+	cleanedStr << "\\\"" << txt.substr(1, txt.size()-2) << "\\\"";
+	
+	yylval.Node->str = cleanedStr.str();
 	
 	idCount["STRING_LITERAL"] += 1;
 	return(STRING_LITERAL);
