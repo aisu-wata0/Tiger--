@@ -17,8 +17,10 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string>
+#include <vector>
 
 #define logSyntax true
+#define YYSTYPE class STNode *
 
 extern FILE *fp;
 
@@ -44,6 +46,30 @@ void yywarn(const std::string & msg)
 }
 
 
+enum class Type {
+	Void,
+	Str,
+	Int,
+};
+
+
+class STNode {
+public:
+    std::string *pStr;
+    std::vector<STNode*> childs;
+};
+
+class STNodeId : public STNode {
+public:
+	Type type;
+};
+
+class STNodeInt : public STNode {
+public:
+	int value;
+};
+
+
 #include "lex.yy.c"
 
 int count=0;
@@ -64,19 +90,20 @@ int main(int argc, char *argv[])
 
 %}
 
-%union{
+/*%union{
     char *a;
     std::string *pStr;
     double d;
-    int fn; 
-}
+    int fn;
+    STNode
+}*/
 
-%type <pStr> logic_expression logic_expression_com arithmetic_expression arithmetic_expression_md arithmetic_expression_con arithmetic_expression_value;
+//%type <pStr> logic_expression logic_expression_com arithmetic_expression arithmetic_expression_md arithmetic_expression_con arithmetic_expression_value;
 
 %%
 letStatement
     : LET declaration_list IN expression_list END 
-{printf("\n==  LET declaration_list IN expression_list END -->  letStatement   '%s'\n", yytext);}
+{std::cout << "\n==  LET declaration_list IN expression_list END -->  letStatement \t\tnext token:'" << yytext << std::endl;}
 	| VAR 
 {yyerror("syntax: missing let");}
 	| LET declaration_list expression
@@ -87,15 +114,15 @@ letStatement
 
 program
 	: letStatement
-{printf("\n==  letStatement -->  program   '%s'\n", yytext);}	
+{std::cout << "\n==  letStatement -->  program \t\tnext token:'" << yytext << std::endl;}	
 	;
 
 declaration_list
 	: declaration declaration_list
 
-{if(logSyntax)printf("\n== declaration declaration_list  -->  declaration_list   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n== declaration declaration_list  -->  declaration_list \t\tnext token:'" << yytext << std::endl;}
 	| declaration
-{if(logSyntax)printf("\n== declaration  -->  declaration_list   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n== declaration  -->  declaration_list \t\tnext token:'" << yytext << std::endl;}
 	| //empty
 	;
 
@@ -106,144 +133,144 @@ declaration
 
 declarationVar
 	: VAR IDENTIFIER ASSIGN valued_expression
-{if(logSyntax)printf("\n== VAR IDENTIFIER ASSIGN valued_expression  -->  declarationVar   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n== VAR IDENTIFIER ASSIGN valued_expression  -->  declarationVar \t\tnext token:'" << yytext << std::endl;}
 	;
 
 declarationFunc
 	: FUNCTION IDENTIFIER '(' parameter_declaration ')' ASSIGN expression
-{if(logSyntax)printf("\n== FUNCTION IDENTIFIER '(' parameter_declaration ')' ASSIGN expression  -->  declarationFunc   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n== FUNCTION IDENTIFIER '(' parameter_declaration ')' ASSIGN expression  -->  declarationFunc \t\tnext token:'" << yytext << std::endl;}
 	;
 
 
 
 expression_list
 	: expression ';' expression_list
-{if(logSyntax)printf("\n==  expression ';' expression_list  -->  expression_list   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n==  expression ';' expression_list  -->  expression_list \t\tnext token:'" << yytext << std::endl;}
 	| whileLoop expression_list
-{if(logSyntax)printf("\n==  whileLoop expression_list  -->  expression_list   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n==  whileLoop expression_list  -->  expression_list \t\tnext token:'" << yytext << std::endl;}
 	| ifThenStatement expression_list
-{if(logSyntax)printf("\n==  ifThenStatement expression_list  -->  expression_list   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n==  ifThenStatement expression_list  -->  expression_list \t\tnext token:'" << yytext << std::endl;}
 	| expression ';'
-{if(logSyntax)printf("\n== expression ';'  -->  expression_list   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n== expression ';'  -->  expression_list \t\tnext token:'" << yytext << std::endl;}
 	| expression
-{if(logSyntax)printf("\n== expression  -->  expression_list   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n== expression  -->  expression_list \t\tnext token:'" << yytext << std::endl;}
 	| // empty
-{if(logSyntax)printf("\n==   -->  expression_list   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n==   -->  expression_list \t\tnext token:'" << yytext << std::endl;}
 	;
 
 
 /*
 expression_list
 	: expression_list_semicolon expression
-{if(logSyntax)printf("\n== expression_list_semicolon expression  -->  expression_list   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n== expression_list_semicolon expression  -->  expression_list \t\tnext token:'" << yytext << std::endl;}
 	| expression_list_semicolon
-{if(logSyntax)printf("\n== expression_list_semicolon  -->  expression_list   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n== expression_list_semicolon  -->  expression_list \t\tnext token:'" << yytext << std::endl;}
 	| expression
-{if(logSyntax)printf("\n== expression  -->  expression_list   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n== expression  -->  expression_list \t\tnext token:'" << yytext << std::endl;}
 	| // empty
-{if(logSyntax)printf("\n==   -->  expression_list   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n==   -->  expression_list \t\tnext token:'" << yytext << std::endl;}
 	;
 
 expression_list_semicolon
 	: expression ';' expression_list_semicolon 
-{if(logSyntax)printf("\n== expression ';' expression_list_semicolon  -->  expression_list_semicolon   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n== expression ';' expression_list_semicolon  -->  expression_list_semicolon \t\tnext token:'" << yytext << std::endl;}
 	| expression ';' 
-{if(logSyntax)printf("\n== expression  -->  expression_list_semicolon   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n== expression  -->  expression_list_semicolon \t\tnext token:'" << yytext << std::endl;}
 	;
 */
 
 expression
 	: void_expression 
-{if(logSyntax)printf("\n== void_expression  -->  expression   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n== void_expression  -->  expression \t\tnext token:'" << yytext << std::endl;}
 	| valued_expression
-{if(logSyntax)printf("\n== valued_expression  -->  expression   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n== valued_expression  -->  expression \t\tnext token:'" << yytext << std::endl;}
 	;
 
 
 void_expression
 	: ifThenStatement
-{if(logSyntax)printf("\n== ifThenStatement  -->  void_expression   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n== ifThenStatement  -->  void_expression \t\tnext token:'" << yytext << std::endl;}
 	| whileLoop 
-{if(logSyntax)printf("\n== whileLoop  -->  void_expression   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n== whileLoop  -->  void_expression \t\tnext token:'" << yytext << std::endl;}
 	| atribution 
-{if(logSyntax)printf("\n== atribution  -->  void_expression   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n== atribution  -->  void_expression \t\tnext token:'" << yytext << std::endl;}
 	| ';'
-{if(logSyntax)printf("\n== ';'  -->  void_expression   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n== ';'  -->  void_expression \t\tnext token:'" << yytext << std::endl;}
 	;
 
 valued_expression
 	: logic_expression 
-{if(logSyntax)printf("\n== logic_expression  -->  valued_expression   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n== logic_expression  -->  valued_expression \t\tnext token:'" << yytext << std::endl;}
 	| functionCall
-{if(logSyntax)printf("\n== functionCall  -->  valued_expression   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n== functionCall  -->  valued_expression \t\tnext token:'" << yytext << std::endl;}
 	| sequence
-{if(logSyntax)printf("\n== sequence  -->  valued_expression   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n== sequence  -->  valued_expression \t\tnext token:'" << yytext << std::endl;}
     | letStatement
-{printf("\n== letStatement  -->  valued_expression   '%s'\n", yytext);}
+{std::cout << "\n== letStatement  -->  valued_expression \t\tnext token:'" << yytext << std::endl;}
 	;
 
 sequence
 	: '(' expression_list ')'
-{if(logSyntax)printf("\n== '(' expression_list ')'  -->  sequence   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n== '(' expression_list ')'  -->  sequence \t\tnext token:'" << yytext << std::endl;}
 	;
 
 
 
 atribution
 	: IDENTIFIER ASSIGN valued_expression
-{if(logSyntax)printf("\n== IDENTIFIER ASSIGN valued_expression  -->  atribution   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n== IDENTIFIER ASSIGN valued_expression  -->  atribution \t\tnext token:'" << yytext << std::endl;}
 	;
 
 
 whileLoop
 	: WHILE valued_expression DO expression
-{if(logSyntax)printf("\n== WHILE valued_expression DO expression  -->  whileLoop   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n== WHILE valued_expression DO expression  -->  whileLoop \t\tnext token:'" << yytext << std::endl;}
 	;
 
 
 
 functionCall
 	: IDENTIFIER '(' parameter_list ')'
-{if(logSyntax)printf("\n== IDENTIFIER '(' parameter_list ')'  -->  functionCall   '%s'\n", yytext);}
+{if(logSyntax)std::cout << "\n== IDENTIFIER '(' parameter_list ')'  -->  functionCall \t\tnext token:'" << yytext << std::endl;}
 	;
 
 parameter_declaration 
     : IDENTIFIER ',' parameter_declaration
-{if(logSyntax)printf("\n== IDENTIFIER ',' parameter_declaration --> parameter_declaration	'%s'\n",yytext);}
+{if(logSyntax)std::cout << "\n== IDENTIFIER ',' parameter_declaration --> parameter_declaration \t\tnext token:'" << yytext << std::endl;}
     | IDENTIFIER
-{if(logSyntax)printf("\n== IDENTIFIER --> parameter_declaration	'%s'\n",yytext);}
+{if(logSyntax)std::cout << "\n== IDENTIFIER --> parameter_declaration \t\tnext token:'" << yytext << std::endl;}
     |
     ;
 	
 parameter_list
 	: valued_expression ',' parameter_list
-{if(logSyntax)printf("\n== valued_expression ',' parameter_list --> parameter_list	'%s'\n",yytext);}
+{if(logSyntax)std::cout << "\n== valued_expression ',' parameter_list --> parameter_list \t\tnext token:'" << yytext << std::endl;}
 	| valued_expression
-{if(logSyntax)printf("\n== valued_expression --> parameter_list '%s'\n",yytext);}
+{if(logSyntax)std::cout << "\n== valued_expression --> parameter_list \t\tnext token:'" << yytext << std::endl;}
 	| STRING_LITERAL ',' parameter_list
-{if(logSyntax)printf("\n== STRING LITERAL ',' parameter_list --> parameter_list	'%s'\n",yytext);}
+{if(logSyntax)std::cout << "\n== STRING LITERAL ',' parameter_list --> parameter_list \t\tnext token:'" << yytext << std::endl;}
 	| STRING_LITERAL
-{if(logSyntax)printf("\n== STRING LITERAL --> parameter_list	'%s'\n",yytext);}
+{if(logSyntax)std::cout << "\n== STRING LITERAL --> parameter_list \t\tnext token:'" << yytext << std::endl;}
 	|
 	;
 
 
 ifThenStatement
 	: ifThenElse
-{if(logSyntax)printf("\n== ifThenElse --> ifThenStatement	'%s'\n",yytext);}
+{if(logSyntax)std::cout << "\n== ifThenElse --> ifThenStatement \t\tnext token:'" << yytext << std::endl;}
 	| ifThen
-{if(logSyntax)printf("\n== ifThen --> ifThenStatement	'%s'\n",yytext);}
+{if(logSyntax)std::cout << "\n== ifThen --> ifThenStatement \t\tnext token:'" << yytext << std::endl;}
 	;
 
 
 ifThenElse
 	: IF valued_expression THEN expression ELSE expression
-{if(logSyntax)printf("\n== IF valued_expression THEN expression ELSE expression --> ifThenElse	'%s'\n",yytext);}
+{if(logSyntax)std::cout << "\n== IF valued_expression THEN expression ELSE expression --> ifThenElse \t\tnext token:'" << yytext << std::endl;}
 	;
 
 ifThen
 	: IF valued_expression THEN expression
-{if(logSyntax)printf("\n== IF valued_expression THEN expression --> ifThen	'%s'\n",yytext);}
+{if(logSyntax)std::cout << "\n== IF valued_expression THEN expression --> ifThen \t\tnext token:'" << yytext << std::endl;}
 	;
 
  /**
@@ -261,65 +288,64 @@ ifThen
 
 logic_expression
 	: logic_expression '&' logic_expression_com
-{if(logSyntax)printf("\n== %s '&' %s --> logic_expression	'%s'\n",$1->c_str(),$3->c_str(),yytext);}
+{if(logSyntax)std::cout << "\n== " << *$1->pStr << " '&' " << *$3->pStr << " --> logic_expression \t\tnext token:'" << yytext << std::endl;}
 	| logic_expression '|' logic_expression_com
-{if(logSyntax)printf("\n== %s '|' %s --> logic_expression	'%s'\n",$1->c_str(),$3->c_str(),yytext);}
+{if(logSyntax)std::cout << "\n== " << *$1->pStr << " '|' " << *$3->pStr << " --> logic_expression \t\tnext token:'" << yytext << std::endl;}
 	| logic_expression_com
 	;
 
 logic_expression_com
 	: logic_expression_com '=' arithmetic_expression
-{if(logSyntax)printf("\n== %s '&' %s --> logic_expression_com	'%s'\n",$1->c_str(),$3->c_str(),yytext);}
+{if(logSyntax)std::cout << "\n== " << *$1->pStr << " '&' " << *$3->pStr << " --> logic_expression_com \t\tnext token:'" << yytext << std::endl;}
 	| logic_expression_com NE_OP arithmetic_expression
-{if(logSyntax)printf("\n== %s NE_OP %s --> logic_expression_com	'%s'\n",$1->c_str(),$3->c_str(),yytext);}
+{if(logSyntax)std::cout << "\n== " << *$1->pStr << " NE_OP " << *$3->pStr << " --> logic_expression_com \t\tnext token:'" << yytext << std::endl;}
 	| logic_expression_com '>' arithmetic_expression
-{if(logSyntax)printf("\n== %s '>' %s --> logic_expression_com	'%s'\n",$1->c_str(),$3->c_str(),yytext);}
+{if(logSyntax)std::cout << "\n== " << *$1->pStr << " '>' " << *$3->pStr << " --> logic_expression_com \t\tnext token:'" << yytext << std::endl;}
 	| logic_expression_com '<' arithmetic_expression
-{if(logSyntax)printf("\n== %s '<' %s --> logic_expression_com	'%s'\n",$1->c_str(),$3->c_str(),yytext);}
+{if(logSyntax)std::cout << "\n== " << *$1->pStr << " '<' " << *$3->pStr << " --> logic_expression_com \t\tnext token:'" << yytext << std::endl;}
 	| logic_expression_com GE_OP arithmetic_expression
-{if(logSyntax)printf("\n== %s GE_OP %s --> logic_expression_com	'%s'\n",$1->c_str(),$3->c_str(),yytext);}
+{if(logSyntax)std::cout << "\n== " << *$1->pStr << " GE_OP " << *$3->pStr << " --> logic_expression_com \t\tnext token:'" << yytext << std::endl;}
 	| logic_expression_com LE_OP arithmetic_expression
-{if(logSyntax)printf("\n== %s LE_OP %s --> logic_expression_com	'%s'\n",$1->c_str(),$3->c_str(),yytext);}
+{if(logSyntax)std::cout << "\n== " << *$1->pStr << " LE_OP " << *$3->pStr << " --> logic_expression_com \t\tnext token:'" << yytext << std::endl;}
 	| arithmetic_expression
-{if(logSyntax)printf("\n== %s --> logic_expression_com	'%s'\n",$1->c_str(),yytext);}
+{if(logSyntax)std::cout << "\n== " << *$1->pStr << " --> logic_expression_com \t\tnext token:'" << yytext << std::endl;}
 	;
 
 
 arithmetic_expression
 	: arithmetic_expression '+' arithmetic_expression_md
-{if(logSyntax)printf("\n== %s '+' %s --> arithmetic_expression	'%s'\n",$1->c_str(),$3->c_str(),yytext);}
+{if(logSyntax)std::cout << "\n== " << *$1->pStr << " '+' " << *$3->pStr << " --> arithmetic_expression \t\tnext token:'" << yytext << std::endl;}
 	| arithmetic_expression '-' arithmetic_expression_md
-{if(logSyntax)printf("\n== %s '-' %s --> arithmetic_expression	'%s'\n",$1->c_str(),$3->c_str(),yytext);}
+{if(logSyntax)std::cout << "\n== " << *$1->pStr << " '-' " << *$3->pStr << " --> arithmetic_expression \t\tnext token:'" << yytext << std::endl;}
 	| arithmetic_expression_md
-{if(logSyntax)printf("\n== %s --> arithmetic_expression	'%s'\n",$1->c_str(),yytext);}
+{if(logSyntax)std::cout << "\n== " << *$1->pStr << " --> arithmetic_expression \t\tnext token:'" << yytext << std::endl;}
 	;
 
 arithmetic_expression_md
 	: arithmetic_expression_md '*' arithmetic_expression_con
-{if(logSyntax)printf("\n== %s '*' %s --> arithmetic_expression_md	'%s'\n",$1->c_str(),$3->c_str(),yytext);}
+{if(logSyntax)std::cout << "\n== " << *$1->pStr << " '*' " << *$3->pStr << " --> arithmetic_expression_md \t\tnext token:'" << yytext << std::endl;}
 	| arithmetic_expression_md '/' arithmetic_expression_con
-{if(logSyntax)printf("\n== %s '/' %s --> arithmetic_expression_md	'%s'\n",$1->c_str(),$3->c_str(),yytext);}
+{if(logSyntax)std::cout << "\n== " << *$1->pStr << " '/' " << *$3->pStr << " --> arithmetic_expression_md \t\tnext token:'" << yytext << std::endl;}
 	| arithmetic_expression_con
-{if(logSyntax)printf("\n== %s --> arithmetic_expression_md	'%s'\n",$1->c_str(),yytext);}
+{if(logSyntax)std::cout << "\n== " << *$1->pStr << " --> arithmetic_expression_md \t\tnext token:'" << yytext << std::endl;}
 	;	
 
 arithmetic_expression_con
 	: '-' arithmetic_expression_value
-{if(logSyntax)printf("\n== '-' %s --> arithmetic_expression_con	'%s'\n",$2->c_str(),yytext);}
+{if(logSyntax)std::cout << "\n== '-' " << *$2->pStr << " --> arithmetic_expression_con \t\tnext token:'" << yytext << std::endl;}
 	| arithmetic_expression_value
-{if(logSyntax)printf("\n== %s --> arithmetic_expression_con	'%s'\n",$1->c_str(),yytext);}
+{if(logSyntax)std::cout << "\n== " << *$1->pStr << " --> arithmetic_expression_con \t\tnext token:'" << yytext << std::endl;}
 	;
 
 arithmetic_expression_value
 	: IDENTIFIER
-
-{if(logSyntax)printf("\n== IDENTIFIER --> arithmetic_expression_value	'%s'\n",yytext);}
+{if(logSyntax)std::cout << "\n== IDENTIFIER --> arithmetic_expression_value \t\tnext token:'" << yytext << std::endl;}
 	| CONSTANT
-{if(logSyntax)printf("\n== CONSTANT --> arithmetic_expression_value	'%s'\n",yytext);}
+{if(logSyntax)std::cout << "\n== CONSTANT --> arithmetic_expression_value \t\tnext token:'" << yytext << std::endl;}
 	| functionCall
-{if(logSyntax)printf("\n== functionCall --> arithmetic_expression_value	'%s'\n",yytext);}
+{if(logSyntax)std::cout << "\n== functionCall --> arithmetic_expression_value \t\tnext token:'" << yytext << std::endl;}
 	| '(' valued_expression ')'
-{if(logSyntax)printf("\n== '(' valued_expression ')' --> arithmetic_expression_value	'%s'\n",yytext);}
+{if(logSyntax)std::cout << "\n== '(' valued_expression ')' --> arithmetic_expression_value \t\tnext token:'" << yytext << std::endl;}
 	;
 
 
