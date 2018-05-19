@@ -5,7 +5,7 @@ LIB		=  -lfl -ly
 
 PROGRAM	= parser.exe
 
-YACCFLAGS = --debug --verbose
+YACCFLAGS = -v -d --debug --verbose --graph
 
 
 all: $(PROGRAM)
@@ -22,6 +22,7 @@ cleanDot:
 
 cleanTest:
 	rm -f *.log
+	rm -f test/*/*/*.log
 
 cleanAll: clean cleanDot cleanPng cleanTest
 	
@@ -38,5 +39,5 @@ lex: tiger--.l
 
 
 yacc: tiger--.y
-	bison -v -d $(YACCFLAGS) tiger--.y
+	bison $(YACCFLAGS) tiger--.y
 	

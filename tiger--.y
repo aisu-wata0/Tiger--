@@ -128,16 +128,17 @@ if(search != idTable.end()) {	\
 
 #include "lex.yy.c"
 
-int count=0;
+int count = 0;
+int graphviz = 0;
+STNode *root;
 
 int main(int argc, char *argv[])
 {
 	int i = 1;
-	int errorConfirm = 0;
 	
 	if(argc > 1)
-	if(strcmp(argv[i], "-e") == 0){
-		errorConfirm = 1;
+	if(strcmp(argv[i], "-g") == 0){
+		graphviz = 1;
 		++i;
 	}
 	
@@ -145,12 +146,9 @@ int main(int argc, char *argv[])
 
 	if(!yyparse()){
 		printf("\n\nParsing completed\n\n");
-		if(errorConfirm)
-			exit(EXIT_FAILURE);
 	} else {
 		printf("\n\nParsing failed\n\n");
-		if(!errorConfirm)
-			exit(EXIT_FAILURE);
+		exit(EXIT_FAILURE);
 	}
 
 	fclose(yyin);
@@ -200,7 +198,9 @@ program
 {std::cout << "\n==  letStatement -->  program \t\tnext token:'" << yytext << std::endl;
 
 $1->code += "\\l";
-	
+
+root = $1;
+
 std::string filename("./derivationTree.dot");
 {
 	std::ofstream fileStream(filename);
@@ -214,9 +214,11 @@ std::string filename("./derivationTree.dot");
 	$1->printChilds("", fileStream);
 	fileStream << "}" << std::endl;
 }
+if(graphviz){
+	system(("dot -Tpng " + filename + " -O").c_str());
+	system(("xdg-open " + filename + ".png&").c_str());
+}
 
-system(("dot -Tpng " + filename + " -O").c_str());
-system(("xdg-open " + filename + ".png&").c_str());
 }
 
 	;
