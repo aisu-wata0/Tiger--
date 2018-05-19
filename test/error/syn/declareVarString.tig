@@ -1,0 +1,9 @@
+let
+    var n := "string"     
+    var f := 1     
+    var i := 2     
+
+
+in  
+    printf(n);
+end
