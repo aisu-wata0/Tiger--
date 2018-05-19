@@ -21,7 +21,7 @@ inline T* tokenFound(bool text = true){
 	yylval.Node = (STNode*)pNode;
 	
 	if(text)
-		pNode->str = std::move(std::string(yytext));
+		pNode->code = std::move(std::string(yytext));
 	
 	return pNode;
 }
@@ -276,7 +276,7 @@ end	{
 {identifier}	{
 	auto lval = tokenFound<STNodeId>();
 	
-	std::string &id = lval->str;
+	std::string &id = lval->code;
 
 	auto search = idTable.find(id);
 
@@ -306,7 +306,7 @@ end	{
 {string}	{
 	tokenFound<STNode>();
 	
-	sanitize(yylval.Node->str);
+	sanitize(yylval.Node->code);
 	
 	idCount["STRING_LITERAL"] += 1;
 	return(STRING_LITERAL);
