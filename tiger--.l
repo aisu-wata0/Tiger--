@@ -9,18 +9,19 @@
 #define logLex true
 
 std::map<std::string,int> idCount;
-std::map<std::string, Type> idTable;
+std::map<std::string, Id> idTable;
 
 template <class T>
-T* tokenFound(){
+inline T* tokenFound(){
 	if(logLex)
 		std::cout << yytext;
 	
-	yylval = new T;
+	T *pNode = new T;
+	yylval.Node = (STNode*)pNode;
 	
-	yylval->pStr = new std::string(yytext);
+	pNode->str = std::move(std::string(yytext));
 	
-	return (T*)yylval;
+	return pNode;
 }
 
 %}
@@ -247,17 +248,19 @@ end	{
 {identifier}	{
 	auto lval = tokenFound<STNodeId>();
 	
-	std::string &id = *(lval->pStr);
+	std::string &id = lval->str;
 
 	auto search = idTable.find(id);
 
 	if(search != idTable.end()) {
-		lval->type = search->second;
+		lval->type = search->second.type;
 	} else {
 		// find out in syntax what it is
 		// and set
 		// idTable[id] = type found;
 	}
+	
+	lval->lineDeclared = yylineno;
 
 	idCount["IDENTIFIER"] += 1;
 	return(IDENTIFIER);
