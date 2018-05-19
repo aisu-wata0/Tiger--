@@ -3,6 +3,8 @@ tiger--.output
 lex.yy.c
 *.tab.c
 *.tab.h
+*.png
+*.dot
 
 # Prerequisites
 *.d
