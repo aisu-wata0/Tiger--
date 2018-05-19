@@ -34,7 +34,6 @@ extern int yylineno;
 
 void yyerror(const std::string & msg, const std::string & note = "")
 {
-	fflush(stdout);
 	std::cerr << std::endl
 	<< "error: " << msg << " in line " << yylineno << ". \tNext token: " << yytext << std::endl;
 	std::cerr << note << std::endl;
@@ -42,11 +41,11 @@ void yyerror(const std::string & msg, const std::string & note = "")
 	exit(1);
 }
 
-void yywarn(const std::string & msg)
+void yywarn(const std::string & msg, const std::string & note = "")
 {
-	fflush(stdout);
 	std::cerr << std::endl
 	<< "warning: " << msg << " in line " << yylineno << ". Token = " << yytext << std::endl;
+	std::cerr << note << std::endl;
 }
 
 
@@ -69,7 +68,7 @@ public:
 	
 	void printChilds(const std::string & prefix, std::ofstream & os){
 		for(auto it : childs){
-			os << prefix << '"' << this << ": " << str << "\" -> \"" << it << ": " << it->str << '"' << std::endl;
+			os << prefix << '"' << this << "\\n" << str << "\" -> \"" << it << "\\n" << it->str << '"' << std::endl;
 			it->printChilds(prefix+"\t", os);
 		}
 	}
@@ -206,8 +205,13 @@ program
 std::string filename("./derivationTree.dot");
 {
 	std::ofstream fileStream(filename);
-
+	
 	fileStream << "digraph G {" << std::endl;
+	
+	fileStream << "\tgraph [fontname = \"monospace\"];\n"
+	<< "\tnode [fontname = \"monospace\"];\n"
+	<< "\tedge [fontname = \"monospace\"];\n";
+	
 	$1->printChilds("", fileStream);
 	fileStream << "}" << std::endl;
 }
@@ -223,8 +227,17 @@ letStatement
 	: LET declaration_list IN expression_list END 
 {std::cout << "\n==  LET declaration_list IN expression_list END -->  letStatement \t\tnext token:'" << yytext << std::endl;
 $$ = new STNodeExp;
-pushChilds5($$, $1, $2, $3, $4, $5);
 $$->type = $4->type;
+
+pushChilds1($$, $1);
+$$->str += "\\l";
+pushChilds1($$, $2);
+$$->str += "\\l";
+pushChilds1($$, $3);
+$$->str += "\\l";
+pushChilds1($$, $4);
+$$->str += "\\l";
+pushChilds1($$, $5);
 }
 
 	| VAR 
@@ -240,7 +253,10 @@ declaration_list
 	: declaration declaration_list
 {if(logSyntax)std::cout << "\n== declaration declaration_list  -->  declaration_list \t\tnext token:'" << yytext << std::endl;
 $$ = new STNode;
-pushChilds2($$, $1, $2);
+
+pushChilds1($$, $1);
+$$->str += "\\l";
+pushChilds1($$, $2);
 }
 
 	| declaration
@@ -250,7 +266,7 @@ pushChilds2($$, $1, $2);
 	| // empty
 {if(logSyntax)std::cout << "\n== declaration declaration_list  -->  declaration_list \t\tnext token:'" << yytext << std::endl;
 $$ = new STNode;
-$$->str = std::move(std::string(""));
+$$->str = std::move(std::string("\n"));
 }
 	;
 
@@ -278,7 +294,10 @@ declarationFunc
 	: FUNCTION IDENTIFIER '(' parameter_declaration ')' ASSIGN expression
 {if(logSyntax)std::cout << "\n== FUNCTION IDENTIFIER '(' parameter_declaration ')' ASSIGN expression  -->  declarationFunc \t\tnext token:'" << yytext << std::endl;
 $$ = new STNode;
-pushChilds7($$, $1, $2, $3, $4, $5, $6, $7);
+
+pushChilds6($$, $1, $2, $3, $4, $5, $6);
+$$->str += "\\l";
+pushChilds1($$, $7);
 
 std::string &id = $2->str;
 checkDeclare(id);
@@ -311,8 +330,11 @@ expression_list
 	: expression ';' expression_list
 {if(logSyntax)std::cout << "\n==  expression ';' expression_list  -->  expression_list \t\tnext token:'" << yytext << std::endl;
 $$ = new STNodeExp;
-pushChilds3($$, $1, $2, $3);
 $$->type = $3->type;
+
+pushChilds2($$, $1, $2);
+$$->str += "\\l";
+pushChilds1($$, $3);
 }
 
 	| whileLoop expression_list
@@ -320,20 +342,26 @@ $$->type = $3->type;
 $$ = new STNodeExp;
 pushChilds2($$, $1, $2);
 $$->type = $2->type;
-}//TODO: warning, missing ';'
+
+yywarn("syntax: missing ';' after expression in expression list", "note: code: " + $1->str);
+}
 
 	| ifThenStatement expression_list
 {if(logSyntax)std::cout << "\n==  ifThenStatement expression_list  -->  expression_list \t\tnext token:'" << yytext << std::endl;
 $$ = new STNodeExp;
 pushChilds2($$, $1, $2);
 $$->type = $2->type;
+
+yywarn("syntax: missing ';' after expression in expression list", "note: code: " + $1->str);
 }//TODO: warning, missing ';'
 
 	| expression ';'
 {if(logSyntax)std::cout << "\n== expression ';'  -->  expression_list \t\tnext token:'" << yytext << std::endl;
 $$ = new STNodeExp;
-pushChilds2($$, $1, $2);
 $$->type = $1->type;
+pushChilds2($$, $1, $2);
+
+yywarn("syntax: extra ';' after last expression in sequence", "note: code: " + $1->str);
 }//TODO: warning, extra ';'
 
 	| expression
@@ -430,7 +458,10 @@ whileLoop
 	: WHILE valued_expression DO expression
 {if(logSyntax)std::cout << "\n== WHILE valued_expression DO expression  -->  whileLoop \t\tnext token:'" << yytext << std::endl;
 $$ = new STNode;
-pushChilds4($$, $1, $2, $3, $4);
+pushChilds3($$, $1, $2, $3);
+$$->str += "\\l";
+pushChilds1($$, $4);
+$$->str += "\\l";
 }
 	;
 
