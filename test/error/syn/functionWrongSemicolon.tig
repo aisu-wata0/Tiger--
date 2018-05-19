@@ -2,7 +2,7 @@ let
     var n := 0     
     var f := 1     
     var i := 2     
-    function fun(a,b,c) := 
+    function fun(a;b,c) := 
     (
 	    a:=b*c
     )
