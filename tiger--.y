@@ -68,7 +68,7 @@ public:
 	
 	void printChilds(const std::string & prefix, std::ofstream & os){
 		for(auto it : childs){
-			os << prefix << '"' << this << ": " << str << "\" -> \"" << it << ": " << it->str << '"' << std::endl;
+			os << prefix << '"' << this << "\\n" << str << "\" -> \"" << it << "\\n" << it->str << '"' << std::endl;
 			it->printChilds(prefix+"\t", os);
 		}
 	}
@@ -205,8 +205,13 @@ program
 std::string filename("./derivationTree.dot");
 {
 	std::ofstream fileStream(filename);
-
+	
 	fileStream << "digraph G {" << std::endl;
+	
+	fileStream << "\tgraph [fontname = \"monospace\"];\n"
+	<< "\tnode [fontname = \"monospace\"];\n"
+	<< "\tedge [fontname = \"monospace\"];\n";
+	
 	$1->printChilds("", fileStream);
 	fileStream << "}" << std::endl;
 }
@@ -225,13 +230,13 @@ $$ = new STNodeExp;
 $$->type = $4->type;
 
 pushChilds1($$, $1);
-$$->str += "\n";
+$$->str += "\\l";
 pushChilds1($$, $2);
-$$->str += "\n";
+$$->str += "\\l";
 pushChilds1($$, $3);
-$$->str += "\n";
+$$->str += "\\l";
 pushChilds1($$, $4);
-$$->str += "\n";
+$$->str += "\\l";
 pushChilds1($$, $5);
 }
 
@@ -250,7 +255,7 @@ declaration_list
 $$ = new STNode;
 
 pushChilds1($$, $1);
-$$->str += "\n";
+$$->str += "\\l";
 pushChilds1($$, $2);
 }
 
@@ -291,7 +296,7 @@ declarationFunc
 $$ = new STNode;
 
 pushChilds6($$, $1, $2, $3, $4, $5, $6);
-$$->str += "\n";
+$$->str += "\\l";
 pushChilds1($$, $7);
 
 std::string &id = $2->str;
@@ -328,7 +333,7 @@ $$ = new STNodeExp;
 $$->type = $3->type;
 
 pushChilds2($$, $1, $2);
-$$->str += "\n";
+$$->str += "\\l";
 pushChilds1($$, $3);
 }
 
@@ -454,9 +459,9 @@ whileLoop
 {if(logSyntax)std::cout << "\n== WHILE valued_expression DO expression  -->  whileLoop \t\tnext token:'" << yytext << std::endl;
 $$ = new STNode;
 pushChilds3($$, $1, $2, $3);
-$$->str += "\n";
+$$->str += "\\l";
 pushChilds1($$, $4);
-$$->str += "\n";
+$$->str += "\\l";
 }
 	;
 
