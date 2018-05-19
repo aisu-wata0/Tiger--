@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <map>
+#include <algorithm>
 
 #include "tiger--.tab.h"
 
@@ -24,6 +25,32 @@ inline T* tokenFound(bool text = true){
 	
 	return pNode;
 }
+
+
+void sanitize(std::string &stringValue)
+{
+    // Add backslashes.
+    for (auto i = stringValue.begin();;) {
+        auto const pos = std::find_if(
+            i, stringValue.end(),
+            [](char const c) { return '\\' == c || '\'' == c || '"' == c; }
+        );
+        if (pos == stringValue.end()) {
+            break;
+        }
+        i = std::next(stringValue.insert(pos, '\\'), 2);
+    }
+    // Removes others.
+    stringValue.erase(
+        std::remove_if(
+            stringValue.begin(), stringValue.end(), [](char const c) {
+                return '\n' == c || '\r' == c || '\0' == c || '\x1A' == c;
+            }
+        ),
+        stringValue.end()
+    );
+}
+
 
 %}
 
@@ -279,12 +306,10 @@ end	{
 {string}	{
 	tokenFound<STNode>(false);
 	
-	std::string txt(yytext);
+	std::string sanString(yytext);
+	sanitize(sanString);
 	
-	std::ostringstream cleanedStr;
-	cleanedStr << "\\\"" << txt.substr(1, txt.size()-2) << "\\\"";
-	
-	yylval.Node->str = cleanedStr.str();
+	yylval.Node->str = std::move(sanString);
 	
 	idCount["STRING_LITERAL"] += 1;
 	return(STRING_LITERAL);
