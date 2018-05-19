@@ -1,12 +1,12 @@
-
+let
     var n := 0     
     var f := 1     
     var i := 2     
-    function fun(a_,b_,c_) := 
-	(
+    function fun(a_,b_,) := 
+    (
 	    a:=b*c
     )
 
 in  
-
+    fun(n,f,);
 end
