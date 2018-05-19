@@ -304,12 +304,9 @@ end	{
 }
 
 {string}	{
-	tokenFound<STNode>(false);
+	tokenFound<STNode>();
 	
-	std::string sanString(yytext);
-	sanitize(sanString);
-	
-	yylval.Node->str = std::move(sanString);
+	sanitize(yylval.Node->str);
 	
 	idCount["STRING_LITERAL"] += 1;
 	return(STRING_LITERAL);
