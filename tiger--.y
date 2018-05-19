@@ -515,7 +515,14 @@ ifThenElse
 	: IF valued_expression THEN expression ELSE expression
 {if(logSyntax)std::cout << "\n== IF valued_expression THEN expression ELSE expression --> ifThenElse \t\tnext token:'" << yytext << std::endl;
 $$ = new STNode;
-pushChilds6($$, $1, $2, $3, $4, $5, $6);
+
+pushChilds3($$, $1, $2, $3);
+$$->str += "\\l";
+pushChilds1($$, $4);
+$$->str += "\\l";
+pushChilds1($$, $5);
+$$->str += "\\l";
+pushChilds1($$, $6);
 }
 	;
 
@@ -523,7 +530,10 @@ ifThen
 	: IF valued_expression THEN expression
 {if(logSyntax)std::cout << "\n== IF valued_expression THEN expression --> ifThen \t\tnext token:'" << yytext << std::endl;
 $$ = new STNode;
-pushChilds4($$, $1, $2, $3, $4);
+
+pushChilds3($$, $1, $2, $3);
+$$->str += "\\l";
+pushChilds1($$, $4);
 }
 	;
 
