@@ -49,6 +49,16 @@ void yywarn(const std::string & msg, const std::string & note = "")
 }
 
 
+void replaceAll(std::string& str, const std::string& from, const std::string& to) {
+    if(from.empty())
+        return;
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+    }
+}
+
 enum class Type {
 	Void,
 	Str,
@@ -67,9 +77,12 @@ public:
 	std::string rule;
 	std::vector<STNode*> childs;
 	
-	void pushChilds(const std::vector<STNode*> & childs, const std::string & prefix = " "){
+	void pushChilds(const std::vector<STNode*> & childs, const std::string & prefix = ""){
 		for(auto it : childs){
-			this->code += prefix + it->code;
+			std::string childCode(it->code);
+			replaceAll(childCode, "\\l", "\\l" + prefix);
+			//childCode = prefix + childCode;
+			this->code += "" + childCode;
 			this->childs.push_back(it);
 		}
 	}
@@ -119,12 +132,26 @@ int count=0;
 
 int main(int argc, char *argv[])
 {
-	yyin = fopen(argv[1], "r");
+	int i = 1;
+	int errorConfirm = 0;
+	
+	if(argc > 1)
+	if(strcmp(argv[i], "-e") == 0){
+		errorConfirm = 1;
+		++i;
+	}
+	
+	yyin = fopen(argv[i], "r");
 
-	if(!yyparse())
-		printf("\nParsing completed\n");
-	else
-		printf("\nParsing failed\n");
+	if(!yyparse()){
+		printf("\n\nParsing completed\n\n");
+		if(errorConfirm)
+			exit(EXIT_FAILURE);
+	} else {
+		printf("\n\nParsing failed\n\n");
+		if(!errorConfirm)
+			exit(EXIT_FAILURE);
+	}
 
 	fclose(yyin);
 
@@ -171,6 +198,8 @@ int main(int argc, char *argv[])
 program
 	: letStatement
 {std::cout << "\n==  letStatement -->  program \t\tnext token:'" << yytext << std::endl;
+
+$1->code += "\\l";
 	
 std::string filename("./derivationTree.dot");
 {
@@ -200,14 +229,15 @@ $$ = new STNodeExp;
 $$->type = $4->type;
 
 $$->pushChilds(std::vector<STNode*>{$1});
-$$->code += "\\l";
-$$->pushChilds(std::vector<STNode*>{$2});
+$$->code += "\\l\t";
+$$->pushChilds(std::vector<STNode*>{$2}, "\t");
 $$->code += "\\l";
 $$->pushChilds(std::vector<STNode*>{$3});
-$$->code += "\\l";
-$$->pushChilds(std::vector<STNode*>{$4});
+$$->code += "\\l\t";
+$$->pushChilds(std::vector<STNode*>{$4}, "\t");
 $$->code += "\\l";
 $$->pushChilds(std::vector<STNode*>{$5});
+$$->code += "\\l";
 }
 
 	| VAR 
@@ -266,8 +296,8 @@ declarationFunc
 $$ = new STNode;
 
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3, $4, $5, $6});
-$$->code += "\\l";
-$$->pushChilds(std::vector<STNode*>{$7});
+$$->code += "\\l\t";
+$$->pushChilds(std::vector<STNode*>{$7}, "\t");
 
 std::string &id = $2->code;
 checkDeclare(id);
@@ -305,6 +335,7 @@ $$->type = $3->type;
 $$->pushChilds(std::vector<STNode*>{$1, $2});
 $$->code += "\\l";
 $$->pushChilds(std::vector<STNode*>{$3});
+$$->code += "\\l";
 }
 
 	| whileLoop expression_list
@@ -423,9 +454,13 @@ whileLoop
 	: WHILE valued_expression DO expression
 {if(logSyntax)std::cout << "\n== WHILE valued_expression DO expression  -->  whileLoop \t\tnext token:'" << yytext << std::endl;
 $$ = new STNode;
-$$->pushChilds(std::vector<STNode*>{$1, $2, $3});
-$$->code += "\\l";
-$$->pushChilds(std::vector<STNode*>{$4});
+$$->pushChilds(std::vector<STNode*>{$1});
+$$->code += " ";
+$$->pushChilds(std::vector<STNode*>{$2});
+$$->code += " ";
+$$->pushChilds(std::vector<STNode*>{$3});
+$$->code += "\\l\t";
+$$->pushChilds(std::vector<STNode*>{$4}, "\t");
 $$->code += "\\l";
 }
 	;
@@ -486,13 +521,18 @@ ifThenElse
 {if(logSyntax)std::cout << "\n== IF valued_expression THEN expression ELSE expression --> ifThenElse \t\tnext token:'" << yytext << std::endl;
 $$ = new STNode;
 
-$$->pushChilds(std::vector<STNode*>{$1, $2, $3});
-$$->code += "\\l";
-$$->pushChilds(std::vector<STNode*>{$4});
+$$->pushChilds(std::vector<STNode*>{$1});
+$$->code += " ";
+$$->pushChilds(std::vector<STNode*>{$2});
+$$->code += " ";
+$$->pushChilds(std::vector<STNode*>{$3});
+$$->code += "\\l\t";
+$$->pushChilds(std::vector<STNode*>{$4}, "\t");
 $$->code += "\\l";
 $$->pushChilds(std::vector<STNode*>{$5});
+$$->code += "\\l\t";
+$$->pushChilds(std::vector<STNode*>{$6}, "\t");
 $$->code += "\\l";
-$$->pushChilds(std::vector<STNode*>{$6});
 }
 	;
 
@@ -501,9 +541,14 @@ ifThen
 {if(logSyntax)std::cout << "\n== IF valued_expression THEN expression --> ifThen \t\tnext token:'" << yytext << std::endl;
 $$ = new STNode;
 
-$$->pushChilds(std::vector<STNode*>{$1, $2, $3});
+$$->pushChilds(std::vector<STNode*>{$1});
+$$->code += " ";
+$$->pushChilds(std::vector<STNode*>{$2});
+$$->code += " ";
+$$->pushChilds(std::vector<STNode*>{$3});
+$$->code += "\\l\t";
+$$->pushChilds(std::vector<STNode*>{$4}, "\t");
 $$->code += "\\l";
-$$->pushChilds(std::vector<STNode*>{$4});
 }
 	;
 
@@ -632,7 +677,7 @@ arithmetic_expression_value
 	| functionCall
 {if(logSyntax)std::cout << "\n== functionCall --> arithmetic_expression_value \t\tnext token:'" << yytext << std::endl;
 checkType(Type::Int, $1->type);
-} // TODO: is this check sufficient?
+} // TODO: semantic: is this check sufficient?
 
 	| '(' valued_expression ')'
 {if(logSyntax)std::cout << "\n== '(' valued_expression ')' --> arithmetic_expression_value \t\tnext token:'" << yytext << std::endl;
