@@ -1,0 +1,12 @@
+let
+	var a := 1
+in
+	while (a*b > 0) do
+	(
+		while (b <> a) do
+		(
+			b := b/a;
+		)
+		a := a - 1;
+	)
+end

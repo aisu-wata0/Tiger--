@@ -35,5 +35,5 @@ lex: tiger--.l
 
 
 yacc: tiger--.y
-	bison -d $(YACCFLAGS) tiger--.y
+	bison -v -d $(YACCFLAGS) tiger--.y
 	

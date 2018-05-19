@@ -8,5 +8,5 @@ let
     )
 
 in  
-    fun(n,f,i);
+    fun(n,f);
 end
