@@ -20,6 +20,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <fstream>
 
 #define logSyntax true
 //#define YYSTYPE class STNode *
@@ -66,10 +67,10 @@ public:
 	std::string str;
 	std::vector<STNode*> childs;
 	
-	void printChilds(const std::string & prefix = ""){
+	void printChilds(const std::string & prefix, std::ofstream & os){
 		for(auto it : childs){
-			std::cout << prefix << '"' << this << ": " << str << "\" -> \"" << it << ": " << it->str << '"' << std::endl;
-			it->printChilds(prefix+"\t");
+			os << prefix << '"' << this << ": " << str << "\" -> \"" << it << ": " << it->str << '"' << std::endl;
+			it->printChilds(prefix+"\t", os);
 		}
 	}
 };
@@ -201,10 +202,18 @@ int main(int argc, char *argv[])
 program
 	: letStatement
 {std::cout << "\n==  letStatement -->  program \t\tnext token:'" << yytext << std::endl;
-std::cout << "\n";
-std::cout << "digraph G {" << std::endl;
-$1->printChilds();
-std::cout << "}" << std::endl;
+	
+std::string filename("./derivationTree.dot");
+{
+	std::ofstream fileStream(filename);
+
+	fileStream << "digraph G {" << std::endl;
+	$1->printChilds("", fileStream);
+	fileStream << "}" << std::endl;
+}
+
+system(("dot -Tpng " + filename + " -O").c_str());
+system(("xdg-open " + filename + ".png&").c_str());
 }
 
 	;
