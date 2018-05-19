@@ -10,5 +10,5 @@ in
                 f := f * i;
                 i := i + 1;
         )
-        printf("\nfatorial de %d = %d\n", n, f)
+        printf("\nfatorial de %d = %d\n", n, f);
 end
