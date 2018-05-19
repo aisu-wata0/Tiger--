@@ -20,7 +20,10 @@ cleanPng:
 cleanDot:
 	rm -f *.dot
 
-cleanAll: clean cleanDot cleanPng
+cleanTest:
+	rm -f *.log
+
+cleanAll: clean cleanDot cleanPng cleanTest
 	
 rebuild: clean all
 
