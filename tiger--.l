@@ -16,13 +16,13 @@ template <class T>
 inline T* tokenFound(bool text = true){
 	if(logLex)
 		std::cout << yytext;
-	
+
 	T *pNode = new T;
 	yylval.Node = (STNode*)pNode;
-	
+
 	if(text)
 		pNode->code = std::move(std::string(yytext));
-	
+
 	return pNode;
 }
 
@@ -275,7 +275,7 @@ end	{
 
 {identifier}	{
 	auto lval = tokenFound<STNodeId>();
-	
+
 	std::string &id = lval->code;
 
 	auto search = idTable.find(id);
@@ -287,7 +287,7 @@ end	{
 		// and set
 		// idTable[id] = type found;
 	}
-	
+
 	lval->lineDeclared = yylineno;
 
 	idCount["IDENTIFIER"] += 1;
@@ -296,36 +296,36 @@ end	{
 
 {unsigned_integer}	{
 	auto lval = tokenFound<STNodeInt>();
-	
+
 	lval->value = atoi(yytext);
-	
+
 	idCount["CONSTANT"] += 1;
 	return(CONSTANT);
 }
 
 {string}	{
 	tokenFound<STNode>();
-	
+
 	sanitize(yylval.Node->code);
-	
+
 	idCount["STRING_LITERAL"] += 1;
 	return(STRING_LITERAL);
 }
 
-{bad_string} {	
+{bad_string} {
 	yyerror("lexical: unclosed string");
 }
 
 {white_space}	{
 	if(logLex)
 		std::cout << yytext;
-	
+
 }/* no effect */
 
 \n	{
 	if(logLex)
 		std::cout << yytext;
-	
+
 	++yylineno;
 }
 
@@ -341,7 +341,7 @@ end	{
 int main()
 {
 	yylex();
-	
+
 	for(auto it = idCount.begin(); it != idCount.end() ; ++it){
 		std::cout << it->first << " : " << it->second << "\n";
 	}
@@ -350,4 +350,3 @@ int main()
 }
 
 */
-
