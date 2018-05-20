@@ -3,10 +3,10 @@ let
 in
 	if (n>1) then (
 		if (2) then (
-			f:=3;
-		)
-		n:=4;
+			f:=3
+		);
+		n:=4
 	) else (
-		n:=5; /* retorna valor de mesmo tipo que o do if then */
-	);
+		n:=5 /* retorna valor de mesmo tipo que o do if then */
+	)
 end

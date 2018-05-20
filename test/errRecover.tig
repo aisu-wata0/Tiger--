@@ -1,0 +1,9 @@
+let
+	var n := 0
+	var f := 1     /* o fatorial  */
+	var i := 2     /* um contador */
+in
+	a:= v:=c;
+	printf("Entre com o numero:")
+	n := getint()
+end

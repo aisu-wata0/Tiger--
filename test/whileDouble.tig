@@ -8,12 +8,12 @@ in
         while i <= n do
         (
                 f := f * i;
-                i := i + 1;
-        )
+                i := i + 1
+        );
         while i <= n do
         (
                 f := f * i;
-                i := i + 1;
-        )
+                i := i + 1
+        );
         printf("\nfatorial de %d = %d\n", n, f)
 end
