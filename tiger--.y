@@ -217,7 +217,7 @@ std::string filename("./derivationTree.dot");
 	<< "\tnode [fontname = \"monospace\"];\n"
 	<< "\tedge [fontname = \"monospace\"];\n";
 
-	$1->printChilds("", fileStream);
+	root->printChilds("", fileStream);
 	fileStream << "}" << std::endl;
 }
 if(graphviz){
@@ -245,7 +245,6 @@ $$->code += "\\l\t";
 $$->pushChilds(std::vector<STNode*>{$4}, "\t");
 $$->code += "\\l";
 $$->pushChilds(std::vector<STNode*>{$5});
-$$->code += "\\l";
 }
 /* // TODO: warnings
 	| VAR
@@ -455,7 +454,6 @@ $$->code += " ";
 $$->pushChilds(std::vector<STNode*>{$3});
 $$->code += "\\l\t";
 $$->pushChilds(std::vector<STNode*>{$4}, "\t");
-$$->code += "\\l";
 }
 	;
 
@@ -518,7 +516,6 @@ $$->code += "\\l";
 $$->pushChilds(std::vector<STNode*>{$5});
 $$->code += "\\l\t";
 $$->pushChilds(std::vector<STNode*>{$6}, "\t");
-$$->code += "\\l";
 }
 	;
 
@@ -534,7 +531,6 @@ $$->code += " ";
 $$->pushChilds(std::vector<STNode*>{$3});
 $$->code += "\\l\t";
 $$->pushChilds(std::vector<STNode*>{$4}, "\t");
-$$->code += "\\l";
 }
 	;
 
