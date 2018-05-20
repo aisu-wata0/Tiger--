@@ -1,0 +1,25 @@
+digraph G {
+	graph [fontname = "monospace"];
+	node [fontname = "monospace"];
+	edge [fontname = "monospace"];
+"0x2033fa0\nlet\l	vara:=1\l	varb:=2\lin\l	a:=b;\lend\l\l" -> "0x20332e0\nlet"
+"0x2033fa0\nlet\l	vara:=1\l	varb:=2\lin\l	a:=b;\lend\l\l" -> "0x2033af0\nvara:=1\lvarb:=2"
+	"0x2033af0\nvara:=1\lvarb:=2" -> "0x20336d0\nvara:=1"
+		"0x20336d0\nvara:=1" -> "0x2033390\nvar"
+		"0x20336d0\nvara:=1" -> "0x2033440\na"
+		"0x20336d0\nvara:=1" -> "0x2033500\n:="
+		"0x20336d0\nvara:=1" -> "0x20335b0\n1"
+	"0x2033af0\nvara:=1\lvarb:=2" -> "0x2033a10\nvarb:=2"
+		"0x2033a10\nvarb:=2" -> "0x2033670\nvar"
+		"0x2033a10\nvarb:=2" -> "0x2033820\nb"
+		"0x2033a10\nvarb:=2" -> "0x2033890\n:="
+		"0x2033a10\nvarb:=2" -> "0x20338f0\n2"
+"0x2033fa0\nlet\l	vara:=1\l	varb:=2\lin\l	a:=b;\lend\l\l" -> "0x2033960\nin"
+"0x2033fa0\nlet\l	vara:=1\l	varb:=2\lin\l	a:=b;\lend\l\l" -> "0x2033ec0\na:=b;"
+	"0x2033ec0\na:=b;" -> "0x2033d60\na:=b"
+		"0x2033d60\na:=b" -> "0x2033b70\na"
+		"0x2033d60\na:=b" -> "0x2033be0\n:="
+		"0x2033d60\na:=b" -> "0x2033c40\nb"
+	"0x2033ec0\na:=b;" -> "0x2033cb0\n;"
+"0x2033fa0\nlet\l	vara:=1\l	varb:=2\lin\l	a:=b;\lend\l\l" -> "0x2033e10\nend"
+}
