@@ -1,10 +1,15 @@
 %token IDENTIFIER CONSTANT STRING_LITERAL
-%token LE_OP GE_OP NE_OP
- // %token EQ_OP '='
- // %token AND_OP '&' OR_OP '|'
 
-%token IF ELSE WHILE DO
-%token ASSIGN END LET THEN FUNCTION VAR
+%left '&' '|'
+%left '<' '>' '=' NE_OP LE_OP GE_OP
+%left '+' '-'
+%left '*' '/'
+%left UMINUS
+
+%precedence THEN
+%precedence ELSE
+%token IF WHILE DO
+%token ASSIGN END LET FUNCTION VAR
 %token IN
 %token '-'
 
@@ -76,7 +81,7 @@ public:
 	std::string code;
 	std::string rule;
 	std::vector<STNode*> childs;
-	
+
 	void pushChilds(const std::vector<STNode*> & childs, const std::string & prefix = ""){
 		for(auto it : childs){
 			std::string childCode(it->code);
@@ -86,7 +91,7 @@ public:
 			this->childs.push_back(it);
 		}
 	}
-	
+
 	void printChilds(const std::string & prefix, std::ofstream & os){
 		for(auto it : childs){
 			os << prefix << '"' << this << "\\n" << code << "\" -> \"" << it << "\\n" << it->code << '"' << std::endl;
@@ -135,13 +140,13 @@ STNode *root;
 int main(int argc, char *argv[])
 {
 	int i = 1;
-	
+
 	if(argc > 1)
 	if(strcmp(argv[i], "-g") == 0){
 		graphviz = 1;
 		++i;
 	}
-	
+
 	yyin = fopen(argv[i], "r");
 
 	if(!yyparse()){
@@ -166,27 +171,28 @@ int main(int argc, char *argv[])
 	STNodeInt *Int;
 }
 
-%type <Int> logic_expression logic_expression_com arithmetic_expression arithmetic_expression_md arithmetic_expression_con arithmetic_expression_value;
+%type <Int> logicExp logicExpCom arithExp arithExpMd arithExpCon arithExpValue;
 
-%type <Exp> letStatement program
+%type <Exp> letExp program
 
 %type <Node> declaration_list declaration declarationVar declarationFunc
 
-%type <Exp> expression_list expression
-%type <Node> void_expression
-%type <Exp> valued_expression
+%type <Exp> expressionList expression
+%type <Node> voidExp
+%type <Exp> valuedExp
 %type <Exp> sequence
 %type <Node> atribution whileLoop
 %type <Exp> functionCall
-%type <Node> parameter_declaration parameter_list ifThenStatement ifThenElse ifThen
+%type <Node> parameter_declaration parameterList ifThenExp ifThenElse ifThen
 
 %type <Int> CONSTANT
 %type <Id> IDENTIFIER
 %type <Node> STRING_LITERAL
-%type <Node> LE_OP GE_OP NE_OP
- // %token EQ_OP '='
- // %token AND_OP '&' OR_OP '|'
-%type <Node> '&' '|' '=' '>' '<'  '+' '-' '*' '/' '(' ')' ',' ';'
+%type <Node> '&' '|'
+%type <Node> '<' '>' '=' NE_OP LE_OP GE_OP
+%type <Node> '+' '-'
+%type <Node> '*' '/'
+%type <Node> '(' ')' ',' ';'
 %type <Node> IF ELSE WHILE DO
 %type <Node> ASSIGN END LET THEN FUNCTION VAR
 %type <Node> IN
@@ -194,8 +200,8 @@ int main(int argc, char *argv[])
 %%
 
 program
-	: letStatement
-{std::cout << "\n==  letStatement -->  program \t\tnext token:'" << yytext << std::endl;
+	: letExp
+{std::cout << "\n==  letExp -->  program \t\tnext token:'" << yytext << std::endl;
 
 $1->code += "\\l";
 
@@ -204,13 +210,13 @@ root = $1;
 std::string filename("./derivationTree.dot");
 {
 	std::ofstream fileStream(filename);
-	
+
 	fileStream << "digraph G {" << std::endl;
-	
+
 	fileStream << "\tgraph [fontname = \"monospace\"];\n"
 	<< "\tnode [fontname = \"monospace\"];\n"
 	<< "\tedge [fontname = \"monospace\"];\n";
-	
+
 	$1->printChilds("", fileStream);
 	fileStream << "}" << std::endl;
 }
@@ -224,9 +230,9 @@ if(graphviz){
 	;
 
 
-letStatement
-	: LET declaration_list IN expression_list END 
-{std::cout << "\n==  LET declaration_list IN expression_list END -->  letStatement \t\tnext token:'" << yytext << std::endl;
+letExp
+	: LET declaration_list IN expressionList END
+{std::cout << "\n==  LET declaration_list IN expressionList END -->  letExp \t\tnext token:'" << yytext << std::endl;
 $$ = new STNodeExp;
 $$->type = $4->type;
 
@@ -242,12 +248,12 @@ $$->pushChilds(std::vector<STNode*>{$5});
 $$->code += "\\l";
 }
 
-	| VAR 
+	| VAR
 {yyerror("syntax: missing let");}
 	| LET declaration_list expression
 {yyerror("syntax: missing in");}
-	| LET declaration_list IN expression_list 
-{yyerror("syntax: missing end");}	
+	| LET declaration_list IN expressionList
+{yyerror("syntax: missing end");}
 	;
 
 
@@ -268,7 +274,7 @@ $$->pushChilds(std::vector<STNode*>{$2});
 	| // empty
 {if(logSyntax)std::cout << "\n== declaration declaration_list  -->  declaration_list \t\tnext token:'" << yytext << std::endl;
 $$ = new STNode;
-$$->code = std::move(std::string("\n"));
+$$->code = std::move(std::string("\\l"));
 }
 	;
 
@@ -278,8 +284,8 @@ declaration
 	;
 
 declarationVar
-	: VAR IDENTIFIER ASSIGN valued_expression
-{if(logSyntax)std::cout << "\n== VAR IDENTIFIER ASSIGN valued_expression  -->  declarationVar \t\tnext token:'" << yytext << std::endl;
+	: VAR IDENTIFIER ASSIGN valuedExp
+{if(logSyntax)std::cout << "\n== VAR IDENTIFIER ASSIGN valuedExp  -->  declarationVar \t\tnext token:'" << yytext << std::endl;
 $$ = new STNode;
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3, $4});
 
@@ -310,7 +316,7 @@ idTable[id].type = $7->type;
 
 	;
 
-parameter_declaration 
+parameter_declaration
     : IDENTIFIER ',' parameter_declaration
 {if(logSyntax)std::cout << "\n== IDENTIFIER ',' parameter_declaration --> parameter_declaration \t\tnext token:'" << yytext << std::endl;
 $$ = new STNode;
@@ -326,11 +332,11 @@ $$ = new STNode;
 $$->code = std::move(std::string(""));
 }
     ;
-   
 
-expression_list
-	: expression ';' expression_list
-{if(logSyntax)std::cout << "\n==  expression ';' expression_list  -->  expression_list \t\tnext token:'" << yytext << std::endl;
+
+expressionList
+	: expression ';' expressionList
+{if(logSyntax)std::cout << "\n==  expression ';' expressionList  -->  expressionList \t\tnext token:'" << yytext << std::endl;
 $$ = new STNodeExp;
 $$->type = $3->type;
 
@@ -340,8 +346,8 @@ $$->pushChilds(std::vector<STNode*>{$3});
 $$->code += "\\l";
 }
 
-	| whileLoop expression_list
-{if(logSyntax)std::cout << "\n==  whileLoop expression_list  -->  expression_list \t\tnext token:'" << yytext << std::endl;
+	| whileLoop expressionList
+{if(logSyntax)std::cout << "\n==  whileLoop expressionList  -->  expressionList \t\tnext token:'" << yytext << std::endl;
 $$ = new STNodeExp;
 $$->pushChilds(std::vector<STNode*>{$1, $2});
 $$->type = $2->type;
@@ -349,8 +355,8 @@ $$->type = $2->type;
 yywarn("syntax: missing ';' after expression in expression list", "note: code: " + $1->code);
 }
 
-	| ifThenStatement expression_list
-{if(logSyntax)std::cout << "\n==  ifThenStatement expression_list  -->  expression_list \t\tnext token:'" << yytext << std::endl;
+	| ifThenExp expressionList
+{if(logSyntax)std::cout << "\n==  ifThenExp expressionList  -->  expressionList \t\tnext token:'" << yytext << std::endl;
 $$ = new STNodeExp;
 $$->pushChilds(std::vector<STNode*>{$1, $2});
 $$->type = $2->type;
@@ -359,7 +365,7 @@ yywarn("syntax: missing ';' after expression in expression list", "note: code: "
 }//TODO: warning, missing ';'
 
 	| expression ';'
-{if(logSyntax)std::cout << "\n== expression ';'  -->  expression_list \t\tnext token:'" << yytext << std::endl;
+{if(logSyntax)std::cout << "\n== expression ';'  -->  expressionList \t\tnext token:'" << yytext << std::endl;
 $$ = new STNodeExp;
 $$->type = $1->type;
 $$->pushChilds(std::vector<STNode*>{$1, $2});
@@ -368,7 +374,7 @@ yywarn("syntax: extra ';' after last expression in sequence", "note: code: " + $
 }//TODO: warning, extra ';'
 
 	| expression
-{if(logSyntax)std::cout << "\n== expression  -->  expression_list \t\tnext token:'" << yytext << std::endl;
+{if(logSyntax)std::cout << "\n== expression  -->  expressionList \t\tnext token:'" << yytext << std::endl;
 $$ = new STNodeExp;
 $$->pushChilds(std::vector<STNode*>{$1});
 $$->type = $1->type;
@@ -378,60 +384,47 @@ $$->type = $1->type;
 
 
 expression
-	: void_expression 
-{if(logSyntax)std::cout << "\n== void_expression  -->  expression \t\tnext token:'" << yytext << std::endl;
+	: voidExp
+{if(logSyntax)std::cout << "\n== voidExp  -->  expression \t\tnext token:'" << yytext << std::endl;
 }
 
-	| valued_expression
-{if(logSyntax)std::cout << "\n== valued_expression  -->  expression \t\tnext token:'" << yytext << std::endl;
+	| valuedExp
+{if(logSyntax)std::cout << "\n== valuedExp  -->  expression \t\tnext token:'" << yytext << std::endl;
 }
 
 	;
 
 
-void_expression
-	: ifThenStatement
-{if(logSyntax)std::cout << "\n== ifThenStatement  -->  void_expression \t\tnext token:'" << yytext << std::endl;
+voidExp
+	: ifThenExp
+{if(logSyntax)std::cout << "\n== ifThenExp  -->  voidExp \t\tnext token:'" << yytext << std::endl;
 }
 
-	| whileLoop 
-{if(logSyntax)std::cout << "\n== whileLoop  -->  void_expression \t\tnext token:'" << yytext << std::endl;
+	| whileLoop
+{if(logSyntax)std::cout << "\n== whileLoop  -->  voidExp \t\tnext token:'" << yytext << std::endl;
 }
 
-	| atribution 
-{if(logSyntax)std::cout << "\n== atribution  -->  void_expression \t\tnext token:'" << yytext << std::endl;
+	| atribution
+{if(logSyntax)std::cout << "\n== atribution  -->  voidExp \t\tnext token:'" << yytext << std::endl;
 }
 
 	| // empty
-{if(logSyntax)std::cout << "\n==   -->  void_expression \t\tnext token:'" << yytext << std::endl;
+{if(logSyntax)std::cout << "\n==   -->  voidExp \t\tnext token:'" << yytext << std::endl;
 $$ = new STNode;
 $$->code = std::move(std::string(""));
 }
 
 	;
 
-valued_expression
-	: logic_expression 
-{if(logSyntax)std::cout << "\n== logic_expression  -->  valued_expression \t\tnext token:'" << yytext << std::endl;
+valuedExp
+	: logicExp
+{if(logSyntax)std::cout << "\n== logicExp  -->  valuedExp \t\tnext token:'" << yytext << std::endl;
 }
-
-	| functionCall
-{if(logSyntax)std::cout << "\n== functionCall  -->  valued_expression \t\tnext token:'" << yytext << std::endl;
-}// TODO: check types
-
-	| sequence
-{if(logSyntax)std::cout << "\n== sequence  -->  valued_expression \t\tnext token:'" << yytext << std::endl;
-}// TODO: check types
-
-	| letStatement
-{std::cout << "\n== letStatement  -->  valued_expression \t\tnext token:'" << yytext << std::endl;
-}// TODO: check types
-
 	;
 
 sequence
-	: '(' expression_list ')'
-{if(logSyntax)std::cout << "\n== '(' expression_list ')'  -->  sequence \t\tnext token:'" << yytext << std::endl;
+	: '(' expressionList ')'
+{if(logSyntax)std::cout << "\n== '(' expressionList ')'  -->  sequence \t\tnext token:'" << yytext << std::endl;
 $$ = new STNodeExp;
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
 $$->type = $2->type;
@@ -442,8 +435,8 @@ $$->type = $2->type;
 
 
 atribution
-	: IDENTIFIER ASSIGN valued_expression
-{if(logSyntax)std::cout << "\n== IDENTIFIER ASSIGN valued_expression  -->  atribution \t\tnext token:'" << yytext << std::endl;
+	: IDENTIFIER ASSIGN valuedExp
+{if(logSyntax)std::cout << "\n== IDENTIFIER ASSIGN valuedExp  -->  atribution \t\tnext token:'" << yytext << std::endl;
 $$ = new STNode;
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
 checkType($1, $3);
@@ -453,8 +446,8 @@ checkType($1, $3);
 
 
 whileLoop
-	: WHILE valued_expression DO expression
-{if(logSyntax)std::cout << "\n== WHILE valued_expression DO expression  -->  whileLoop \t\tnext token:'" << yytext << std::endl;
+	: WHILE valuedExp DO expression
+{if(logSyntax)std::cout << "\n== WHILE valuedExp DO expression  -->  whileLoop \t\tnext token:'" << yytext << std::endl;
 $$ = new STNode;
 $$->pushChilds(std::vector<STNode*>{$1});
 $$->code += " ";
@@ -469,58 +462,50 @@ $$->code += "\\l";
 
 
 
-functionCall
-	: IDENTIFIER '(' parameter_list ')'
-{if(logSyntax)std::cout << "\n== IDENTIFIER '(' parameter_list ')'  -->  functionCall \t\tnext token:'" << yytext << std::endl;
+functionCall // TODO: semantic: maybe this ID was not declared
+// maybe this ID was not a function, but a var
+	: IDENTIFIER '(' parameterList ')'
+{if(logSyntax)std::cout << "\n== IDENTIFIER '(' parameterList ')'  -->  functionCall \t\tnext token:'" << yytext << std::endl;
 $$ = new STNodeExp;
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3, $4});
 $$->type = $1->type;
 }
+
+	| IDENTIFIER '(' ')'
+{if(logSyntax)std::cout << "\n== IDENTIFIER '(' ')'  -->  functionCall \t\tnext token:'" << yytext << std::endl;
+$$ = new STNodeExp;
+$$->pushChilds(std::vector<STNode*>{$1, $2, $3});
+$$->type = $1->type;
+}
 	;
-	
-parameter_list
-	: valued_expression ',' parameter_list
-{if(logSyntax)std::cout << "\n== valued_expression ',' parameter_list --> parameter_list \t\tnext token:'" << yytext << std::endl;
+
+parameterList
+	: valuedExp ',' parameterList
+{if(logSyntax)std::cout << "\n== valuedExp ',' parameterList --> parameterList \t\tnext token:'" << yytext << std::endl;
 $$ = new STNode;
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
 }
-	| valued_expression
-{if(logSyntax)std::cout << "\n== valued_expression --> parameter_list \t\tnext token:'" << yytext << std::endl;
-}
-
-	| STRING_LITERAL ',' parameter_list
-{if(logSyntax)std::cout << "\n== STRING LITERAL ',' parameter_list --> parameter_list \t\tnext token:'" << yytext << std::endl;
-$$ = new STNode;
-$$->pushChilds(std::vector<STNode*>{$1, $2, $3});
-}
-
-	| STRING_LITERAL
-{if(logSyntax)std::cout << "\n== STRING LITERAL --> parameter_list \t\tnext token:'" << yytext << std::endl;
-}
-
-	| // empty
-{if(logSyntax)std::cout << "\n== STRING LITERAL --> parameter_list \t\tnext token:'" << yytext << std::endl;
-$$ = new STNode;
-$$->code = std::move(std::string(""));
+	| valuedExp
+{if(logSyntax)std::cout << "\n== valuedExp --> parameterList \t\tnext token:'" << yytext << std::endl;
 }
 	;
 
 
-ifThenStatement
+ifThenExp
 	: ifThenElse
-{if(logSyntax)std::cout << "\n== ifThenElse --> ifThenStatement \t\tnext token:'" << yytext << std::endl;
+{if(logSyntax)std::cout << "\n== ifThenElse --> ifThenExp \t\tnext token:'" << yytext << std::endl;
 }
 
 	| ifThen
-{if(logSyntax)std::cout << "\n== ifThen --> ifThenStatement \t\tnext token:'" << yytext << std::endl;
+{if(logSyntax)std::cout << "\n== ifThen --> ifThenExp \t\tnext token:'" << yytext << std::endl;
 }
 
 	;
 
 
 ifThenElse
-	: IF valued_expression THEN expression ELSE expression
-{if(logSyntax)std::cout << "\n== IF valued_expression THEN expression ELSE expression --> ifThenElse \t\tnext token:'" << yytext << std::endl;
+	: IF valuedExp THEN expression ELSE expression
+{if(logSyntax)std::cout << "\n== IF valuedExp THEN expression ELSE expression --> ifThenElse \t\tnext token:'" << yytext << std::endl;
 $$ = new STNode;
 
 $$->pushChilds(std::vector<STNode*>{$1});
@@ -539,8 +524,8 @@ $$->code += "\\l";
 	;
 
 ifThen
-	: IF valued_expression THEN expression
-{if(logSyntax)std::cout << "\n== IF valued_expression THEN expression --> ifThen \t\tnext token:'" << yytext << std::endl;
+	: IF valuedExp THEN expression
+{if(logSyntax)std::cout << "\n== IF valuedExp THEN expression --> ifThen \t\tnext token:'" << yytext << std::endl;
 $$ = new STNode;
 
 $$->pushChilds(std::vector<STNode*>{$1});
@@ -554,135 +539,141 @@ $$->code += "\\l";
 }
 	;
 
- /**
-ifThenElse
-	: IF expression then ifThenElse ELSE ifThenElse
+
+logicExp
+	: logicExp '&' logicExpCom
+{if(logSyntax)std::cout << "\n== " << $1->code << " '&' " << $3->code << " --> logicExp \t\tnext token:'" << yytext << std::endl;
+$$ = new STNodeInt;
+$$->pushChilds(std::vector<STNode*>{$1, $2, $3});
+}
+	| logicExp '|' logicExpCom
+{if(logSyntax)std::cout << "\n== " << $1->code << " '|' " << $3->code << " --> logicExp \t\tnext token:'" << yytext << std::endl;
+$$ = new STNodeInt;
+$$->pushChilds(std::vector<STNode*>{$1, $2, $3});
+}
+	| logicExpCom
 	;
 
-ifThen
-	: IF valued_expression THEN expression
-	| IF valued_expression THEN ifThenElse ELSE ifThen
-	;
-
- /**/
-
-
-logic_expression
-	: logic_expression '&' logic_expression_com
-{if(logSyntax)std::cout << "\n== " << $1->code << " '&' " << $3->code << " --> logic_expression \t\tnext token:'" << yytext << std::endl;
-$$ = new STNodeInt;
-$$->pushChilds(std::vector<STNode*>{$1, $2, $3});
-}
-	| logic_expression '|' logic_expression_com
-{if(logSyntax)std::cout << "\n== " << $1->code << " '|' " << $3->code << " --> logic_expression \t\tnext token:'" << yytext << std::endl;
-$$ = new STNodeInt;
-$$->pushChilds(std::vector<STNode*>{$1, $2, $3});
-}
-	| logic_expression_com
-	;
-
-logic_expression_com
-	: logic_expression_com '=' arithmetic_expression
-{if(logSyntax)std::cout << "\n== " << $1->code << " '&' " << $3->code << " --> logic_expression_com \t\tnext token:'" << yytext << std::endl;
-$$ = new STNodeInt;
-$$->pushChilds(std::vector<STNode*>{$1, $2, $3});
-}
-	| logic_expression_com NE_OP arithmetic_expression
-{if(logSyntax)std::cout << "\n== " << $1->code << " NE_OP " << $3->code << " --> logic_expression_com \t\tnext token:'" << yytext << std::endl;
-$$ = new STNodeInt;
-$$->pushChilds(std::vector<STNode*>{$1, $2, $3});
-}
-	| logic_expression_com '>' arithmetic_expression
-{if(logSyntax)std::cout << "\n== " << $1->code << " '>' " << $3->code << " --> logic_expression_com \t\tnext token:'" << yytext << std::endl;
-$$ = new STNodeInt;
-$$->pushChilds(std::vector<STNode*>{$1, $2, $3});
-}
-	| logic_expression_com '<' arithmetic_expression
-{if(logSyntax)std::cout << "\n== " << $1->code << " '<' " << $3->code << " --> logic_expression_com \t\tnext token:'" << yytext << std::endl;
-$$ = new STNodeInt;
-$$->pushChilds(std::vector<STNode*>{$1, $2, $3});
-}
-	| logic_expression_com GE_OP arithmetic_expression
-{if(logSyntax)std::cout << "\n== " << $1->code << " GE_OP " << $3->code << " --> logic_expression_com \t\tnext token:'" << yytext << std::endl;
+logicExpCom
+	: logicExpCom '<' arithExp
+{if(logSyntax)std::cout << "\n== " << $1->code << " '<' " << $3->code << " --> logicExpCom \t\tnext token:'" << yytext << std::endl;
 $$ = new STNodeInt;
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
 }
 
-	| logic_expression_com LE_OP arithmetic_expression
-{if(logSyntax)std::cout << "\n== " << $1->code << " LE_OP " << $3->code << " --> logic_expression_com \t\tnext token:'" << yytext << std::endl;
+	| logicExpCom '>' arithExp
+{if(logSyntax)std::cout << "\n== " << $1->code << " '>' " << $3->code << " --> logicExpCom \t\tnext token:'" << yytext << std::endl;
 $$ = new STNodeInt;
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
 }
 
-	| arithmetic_expression
-{if(logSyntax)std::cout << "\n== " << $1->code << " --> logic_expression_com \t\tnext token:'" << yytext << std::endl;
+	| logicExpCom '=' arithExp
+{if(logSyntax)std::cout << "\n== " << $1->code << " '&' " << $3->code << " --> logicExpCom \t\tnext token:'" << yytext << std::endl;
+$$ = new STNodeInt;
+$$->pushChilds(std::vector<STNode*>{$1, $2, $3});
+}
+
+	| logicExpCom NE_OP arithExp
+{if(logSyntax)std::cout << "\n== " << $1->code << " NE_OP " << $3->code << " --> logicExpCom \t\tnext token:'" << yytext << std::endl;
+$$ = new STNodeInt;
+$$->pushChilds(std::vector<STNode*>{$1, $2, $3});
+}
+
+	| logicExpCom LE_OP arithExp
+{if(logSyntax)std::cout << "\n== " << $1->code << " LE_OP " << $3->code << " --> logicExpCom \t\tnext token:'" << yytext << std::endl;
+$$ = new STNodeInt;
+$$->pushChilds(std::vector<STNode*>{$1, $2, $3});
+}
+
+	| logicExpCom GE_OP arithExp
+{if(logSyntax)std::cout << "\n== " << $1->code << " GE_OP " << $3->code << " --> logicExpCom \t\tnext token:'" << yytext << std::endl;
+$$ = new STNodeInt;
+$$->pushChilds(std::vector<STNode*>{$1, $2, $3});
+}
+
+	| arithExp
+{if(logSyntax)std::cout << "\n== " << $1->code << " --> logicExpCom \t\tnext token:'" << yytext << std::endl;
 }
 
 	;
 
 
-arithmetic_expression
-	: arithmetic_expression '+' arithmetic_expression_md
-{if(logSyntax)std::cout << "\n== " << $1->code << " '+' " << $3->code << " --> arithmetic_expression \t\tnext token:'" << yytext << std::endl;
+arithExp
+	: arithExp '+' arithExpMd
+{if(logSyntax)std::cout << "\n== " << $1->code << " '+' " << $3->code << " --> arithExp \t\tnext token:'" << yytext << std::endl;
 $$ = new STNodeInt;
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
 }
-	| arithmetic_expression '-' arithmetic_expression_md
-{if(logSyntax)std::cout << "\n== " << $1->code << " '-' " << $3->code << " --> arithmetic_expression \t\tnext token:'" << yytext << std::endl;
+	| arithExp '-' arithExpMd
+{if(logSyntax)std::cout << "\n== " << $1->code << " '-' " << $3->code << " --> arithExp \t\tnext token:'" << yytext << std::endl;
 $$ = new STNodeInt;
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
 }
-	| arithmetic_expression_md
-{if(logSyntax)std::cout << "\n== " << $1->code << " --> arithmetic_expression \t\tnext token:'" << yytext << std::endl;
+	| arithExpMd
+{if(logSyntax)std::cout << "\n== " << $1->code << " --> arithExp \t\tnext token:'" << yytext << std::endl;
 }
 
 	;
 
-arithmetic_expression_md
-	: arithmetic_expression_md '*' arithmetic_expression_con
-{if(logSyntax)std::cout << "\n== " << $1->code << " '*' " << $3->code << " --> arithmetic_expression_md \t\tnext token:'" << yytext << std::endl;
+arithExpMd
+	: arithExpMd '*' arithExpCon
+{if(logSyntax)std::cout << "\n== " << $1->code << " '*' " << $3->code << " --> arithExpMd \t\tnext token:'" << yytext << std::endl;
 $$ = new STNodeInt;
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
 }
-	| arithmetic_expression_md '/' arithmetic_expression_con
-{if(logSyntax)std::cout << "\n== " << $1->code << " '/' " << $3->code << " --> arithmetic_expression_md \t\tnext token:'" << yytext << std::endl;
+	| arithExpMd '/' arithExpCon
+{if(logSyntax)std::cout << "\n== " << $1->code << " '/' " << $3->code << " --> arithExpMd \t\tnext token:'" << yytext << std::endl;
 $$ = new STNodeInt;
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
 }
-	| arithmetic_expression_con
-{if(logSyntax)std::cout << "\n== " << $1->code << " --> arithmetic_expression_md \t\tnext token:'" << yytext << std::endl;
+	| arithExpCon
+{if(logSyntax)std::cout << "\n== " << $1->code << " --> arithExpMd \t\tnext token:'" << yytext << std::endl;
 }
 
-	;	
+	;
 
-arithmetic_expression_con
-	: '-' arithmetic_expression_value
-{if(logSyntax)std::cout << "\n== '-' " << $2->code << " --> arithmetic_expression_con \t\tnext token:'" << yytext << std::endl;
+arithExpCon
+	: '-' arithExpValue
+	%prec UMINUS
+{if(logSyntax)std::cout << "\n== '-' " << $2->code << " --> arithExpCon \t\tnext token:'" << yytext << std::endl;
 $$ = new STNodeInt;
 $$->pushChilds(std::vector<STNode*>{$1, $2});
 }
-	| arithmetic_expression_value
-{if(logSyntax)std::cout << "\n== " << $1->code << " --> arithmetic_expression_con \t\tnext token:'" << yytext << std::endl;
+
+	| arithExpValue
+{if(logSyntax)std::cout << "\n== " << $1->code << " --> arithExpCon \t\tnext token:'" << yytext << std::endl;
 }
 
 	;
 
-arithmetic_expression_value
+arithExpValue // TODO: semantic: check types
 	: IDENTIFIER
-{if(logSyntax)std::cout << "\n== IDENTIFIER --> arithmetic_expression_value \t\tnext token:'" << yytext << std::endl;
+{if(logSyntax)std::cout << "\n== IDENTIFIER --> arithExpValue \t\tnext token:'" << yytext << std::endl;
 } // TODO: semantic: may be function id without calling
 
 	| CONSTANT
-{if(logSyntax)std::cout << "\n== CONSTANT --> arithmetic_expression_value \t\tnext token:'" << yytext << std::endl;
+{if(logSyntax)std::cout << "\n== CONSTANT --> arithExpValue \t\tnext token:'" << yytext << std::endl;
 }
 
 	| functionCall
-{if(logSyntax)std::cout << "\n== functionCall --> arithmetic_expression_value \t\tnext token:'" << yytext << std::endl;
+{if(logSyntax)std::cout << "\n== functionCall --> arithExpValue \t\tnext token:'" << yytext << std::endl;
 checkType(Type::Int, $1->type);
-} // TODO: semantic: is this check sufficient?
+}
 
-	| '(' valued_expression ')'
-{if(logSyntax)std::cout << "\n== '(' valued_expression ')' --> arithmetic_expression_value \t\tnext token:'" << yytext << std::endl;
+	| sequence
+{if(logSyntax)std::cout << "\n== sequence  -->  valuedExp \t\tnext token:'" << yytext << std::endl;
+}
+
+	| STRING_LITERAL
+{if(logSyntax)std::cout << "\n== STRING_LITERAL  -->  valuedExp \t\tnext token:'" << yytext << std::endl;
+}
+
+	| letExp
+{std::cout << "\n== letExp  -->  valuedExp \t\tnext token:'" << yytext << std::endl;
+}
+
+	| '(' valuedExp ')'
+{if(logSyntax)std::cout << "\n== '(' valuedExp ')' --> arithExpValue \t\tnext token:'" << yytext << std::endl;
 $$ = new STNodeInt;
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
 }
@@ -691,4 +682,3 @@ $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
 
 
 %%
-
