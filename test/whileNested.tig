@@ -5,8 +5,8 @@ in
 	(
 		while (b <> a) do
 		(
-			b := b/a;
-		)
-		a := a - 1;
+			b := b/a
+		);
+		a := a - 1
 	)
 end

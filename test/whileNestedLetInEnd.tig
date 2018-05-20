@@ -9,9 +9,9 @@ in
 				var x:=3
 			in
 				b := b/a;
-				b := a+x;
-			end;
-		)
-		a := a - 1;
+				b := a+x
+			end
+		);
+		a := a - 1
 	)
 end
