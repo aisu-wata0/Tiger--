@@ -1,4 +1,6 @@
-%token IDENTIFIER CONSTANT STRING_LITERAL
+
+%precedence THEN
+%precedence ELSE
 
 %left '&' '|'
 %left '<' '>' '=' NE_OP LE_OP GE_OP
@@ -6,12 +8,10 @@
 %left '*' '/'
 %left UMINUS
 
-%precedence THEN
-%precedence ELSE
+%token IDENTIFIER CONSTANT STRING_LITERAL
 %token IF WHILE DO
 %token ASSIGN END LET FUNCTION VAR
 %token IN
-%token '-'
 
 %start program
 
@@ -181,7 +181,7 @@ int main(int argc, char *argv[])
 %type <Node> voidExp
 %type <Exp> valuedExp
 %type <Exp> sequence
-%type <Node> atribution whileLoop
+%type <Node> attribution whileLoop
 %type <Exp> functionCall
 %type <Node> parameter_declaration parameterList ifThenExp ifThenElse ifThen
 
@@ -247,19 +247,20 @@ $$->code += "\\l";
 $$->pushChilds(std::vector<STNode*>{$5});
 $$->code += "\\l";
 }
-
+/* // TODO: warnings
 	| VAR
 {yyerror("syntax: missing let");}
 	| LET declaration_list expression
 {yyerror("syntax: missing in");}
 	| LET declaration_list IN expressionList
 {yyerror("syntax: missing end");}
+*/
 	;
 
 
 declaration_list
-	: declaration declaration_list
-{if(logSyntax)std::cout << "\n== declaration declaration_list  -->  declaration_list \t\tnext token:'" << yytext << std::endl;
+	: declaration_list declaration
+{if(logSyntax)std::cout << "\n== declaration_list declaration  -->  declaration_list \t\tnext token:'" << yytext << std::endl;
 $$ = new STNode;
 
 $$->pushChilds(std::vector<STNode*>{$1});
@@ -272,7 +273,7 @@ $$->pushChilds(std::vector<STNode*>{$2});
 }
 
 	| // empty
-{if(logSyntax)std::cout << "\n== declaration declaration_list  -->  declaration_list \t\tnext token:'" << yytext << std::endl;
+{if(logSyntax)std::cout << "\n==   -->  declaration_list \t\tnext token:'" << yytext << std::endl;
 $$ = new STNode;
 $$->code = std::move(std::string("\\l"));
 }
@@ -317,7 +318,7 @@ idTable[id].type = $7->type;
 	;
 
 parameter_declaration
-    : IDENTIFIER ',' parameter_declaration
+    : parameter_declaration ',' IDENTIFIER
 {if(logSyntax)std::cout << "\n== IDENTIFIER ',' parameter_declaration --> parameter_declaration \t\tnext token:'" << yytext << std::endl;
 $$ = new STNode;
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
@@ -335,8 +336,8 @@ $$->code = std::move(std::string(""));
 
 
 expressionList
-	: expression ';' expressionList
-{if(logSyntax)std::cout << "\n==  expression ';' expressionList  -->  expressionList \t\tnext token:'" << yytext << std::endl;
+	: expressionList ';' expression
+{if(logSyntax)std::cout << "\n==  expressionList ';' expression  -->  expressionList \t\tnext token:'" << yytext << std::endl;
 $$ = new STNodeExp;
 $$->type = $3->type;
 
@@ -346,6 +347,14 @@ $$->pushChilds(std::vector<STNode*>{$3});
 $$->code += "\\l";
 }
 
+	| expression
+{if(logSyntax)std::cout << "\n== expression  -->  expressionList \t\tnext token:'" << yytext << std::endl;
+$$ = new STNodeExp;
+$$->pushChilds(std::vector<STNode*>{$1});
+$$->type = $1->type;
+}
+
+/* //TODO: warnings
 	| whileLoop expressionList
 {if(logSyntax)std::cout << "\n==  whileLoop expressionList  -->  expressionList \t\tnext token:'" << yytext << std::endl;
 $$ = new STNodeExp;
@@ -362,7 +371,7 @@ $$->pushChilds(std::vector<STNode*>{$1, $2});
 $$->type = $2->type;
 
 yywarn("syntax: missing ';' after expression in expression list", "note: code: " + $1->code);
-}//TODO: warning, missing ';'
+}
 
 	| expression ';'
 {if(logSyntax)std::cout << "\n== expression ';'  -->  expressionList \t\tnext token:'" << yytext << std::endl;
@@ -371,14 +380,8 @@ $$->type = $1->type;
 $$->pushChilds(std::vector<STNode*>{$1, $2});
 
 yywarn("syntax: extra ';' after last expression in sequence", "note: code: " + $1->code);
-}//TODO: warning, extra ';'
-
-	| expression
-{if(logSyntax)std::cout << "\n== expression  -->  expressionList \t\tnext token:'" << yytext << std::endl;
-$$ = new STNodeExp;
-$$->pushChilds(std::vector<STNode*>{$1});
-$$->type = $1->type;
 }
+*/
 
 	;
 
@@ -404,8 +407,8 @@ voidExp
 {if(logSyntax)std::cout << "\n== whileLoop  -->  voidExp \t\tnext token:'" << yytext << std::endl;
 }
 
-	| atribution
-{if(logSyntax)std::cout << "\n== atribution  -->  voidExp \t\tnext token:'" << yytext << std::endl;
+	| attribution
+{if(logSyntax)std::cout << "\n== attribution  -->  voidExp \t\tnext token:'" << yytext << std::endl;
 }
 
 	| // empty
@@ -434,9 +437,9 @@ $$->type = $2->type;
 
 
 
-atribution
+attribution
 	: IDENTIFIER ASSIGN valuedExp
-{if(logSyntax)std::cout << "\n== IDENTIFIER ASSIGN valuedExp  -->  atribution \t\tnext token:'" << yytext << std::endl;
+{if(logSyntax)std::cout << "\n== IDENTIFIER ASSIGN valuedExp  -->  attribution \t\tnext token:'" << yytext << std::endl;
 $$ = new STNode;
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
 checkType($1, $3);
