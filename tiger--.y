@@ -94,7 +94,7 @@ public:
 
 	void printChilds(const std::string & prefix, std::ofstream & os){
 		for(auto it : childs){
-			os << prefix << '"' << this << "\\n" << code << "\" -> \"" << it << "\\n" << it->code << '"' << std::endl;
+			os << prefix << '"' << this << "\\n" << code << "\" -> \"" << it << "\\n" << it->code << '\\n' << it->rule << std::endl;
 			it->printChilds(prefix+"\t", os);
 		}
 	}
@@ -240,8 +240,8 @@ letExp
 	: LET declarationList IN expressionList END
 {std::cout << "\n==  LET declarationList IN expressionList END -->  letExp \t\tnext token:'" << yytext << std::endl;
 $$ = new STNodeExp;
+$$->rule = "letExp";
 $$->type = $4->type;
-
 $$->pushChilds(std::vector<STNode*>{$1});
 $$->code += "\\l\t";
 $$->pushChilds(std::vector<STNode*>{$2}, "\t");
@@ -267,7 +267,7 @@ declarationList
 	: declarationList declaration
 {if(logSyntax)std::cout << "\n== declarationList declaration  -->  declarationList \t\tnext token:'" << yytext << std::endl;
 $$ = new STNode;
-
+$$->rule = "declarationList";
 $$->pushChilds(std::vector<STNode*>{$1});
 $$->code += "\\l";
 $$->pushChilds(std::vector<STNode*>{$2});
