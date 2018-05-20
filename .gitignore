@@ -5,6 +5,7 @@ lex.yy.c
 *.tab.h
 *.png
 *.dot
+*.log
 
 # Prerequisites
 *.d
