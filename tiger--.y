@@ -92,10 +92,12 @@ public:
 		}
 	}
 
-	void printChilds(const std::string & prefix, std::ofstream & os){
+	void printChilds(const std::string & prefix, std::ofstream & os, int & numberId){
+		int myId = numberId;
+		++numberId;
 		for(auto it : childs){
-			os << prefix << '"' << this << "\\n" << code << "\" -> \"" << it << "\\n" << it->code << '"' << std::endl;
-			it->printChilds(prefix+"\t", os);
+			os << prefix << '"' << myId << "\\n" << code << "\" -> \"" << numberId << "\\n" << it->code << '"' << std::endl;
+			it->printChilds(prefix+"\t", os, numberId);
 		}
 	}
 };
@@ -167,8 +169,8 @@ int main(int argc, char *argv[])
 		fileStream << "\tgraph [fontname = \"monospace\"];\n"
 		<< "\tnode [fontname = \"monospace\"];\n"
 		<< "\tedge [fontname = \"monospace\"];\n";
-
-		root->printChilds("", fileStream);
+		int numberOfNodes = 0;
+		root->printChilds("", fileStream, numberOfNodes);
 		fileStream << "}" << std::endl;
 
 		std::cout << "\n\tSummoning dot and opening resulting graph picture\n" << std::endl;
