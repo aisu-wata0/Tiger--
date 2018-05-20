@@ -1,0 +1,5 @@
+let
+	a:= 2 open comments */
+in
+	a
+end
