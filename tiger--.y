@@ -277,7 +277,7 @@ if(logSyntax)std::cout << "\n==  letExp -->  program \t\tnext token: " << yytext
 
 letExp
 	: LET declarationList IN expressionList END
-{std::cout << "\n==  LET declarationList IN expressionList END -->  letExp \t\tnext token: " << yytext << std::endl;
+{
 $$ = new STNodeExp;
 $$->type = $4->type;
 
@@ -290,7 +290,9 @@ $$->code += "\\l\t";
 $$->pushChilds(std::vector<STNode*>{$4}, "\t");
 $$->code += "\\l";
 $$->pushChilds(std::vector<STNode*>{$5});
+if(logSyntax)std::cout << "\n==  LET declarationList IN expressionList END -->  letExp \t\tnext token: " << yytext << std::endl;
 }
+
 /* // TODO: warnings
 	| VAR
 {yyerror("syntax: missing let");}
