@@ -1,16 +1,11 @@
 
 %{
-#include <stdio.h>
-#include <iostream>
-#include <map>
-#include <algorithm>
 
 #include "tiger--.tab.h"
 
 #define logLex true
 
 std::map<std::string,int> idCount;
-std::map<std::string, Id> idTable;
 
 template <class T>
 inline T* tokenFound(bool text = true){
@@ -282,13 +277,12 @@ end	{
 
 	if(search != idTable.end()) {
 		lval->type = search->second.type;
+		lval->lineDeclared = search->second.lineDeclared;
 	} else {
-		// find out in syntax what it is
-		// and set
-		// idTable[id] = type found;
+		// find out in syntax what it is and set
+		// idTable[id] = type declared;
+    	lval->lineDeclared = yylineno;
 	}
-
-	lval->lineDeclared = yylineno;
 
 	idCount["IDENTIFIER"] += 1;
 	return(IDENTIFIER);
@@ -296,6 +290,7 @@ end	{
 
 {unsigned_integer}	{
 	auto lval = tokenFound<STNodeInt>();
+	yylval.Int->type = Type::Int;
 
 	lval->value = atoi(yytext);
 
@@ -304,7 +299,8 @@ end	{
 }
 
 {string}	{
-	tokenFound<STNode>();
+	tokenFound<STNodeExp>();
+	yylval.Exp->type = Type::Str;
 
 	sanitize(yylval.Node->code);
 
