@@ -2,28 +2,28 @@ digraph G {
 	graph [fontname = "monospace"];
 	node [fontname = "monospace"];
 	edge [fontname = "monospace"];
-"0x176af00\nlet\l	\l	\l	vara:=1\l	varb:=2\lin\l	a:=b;\l	\l	\lend\l" -> "0x176a0b0\nlet\nletExpexist
-"0x176af00\nlet\l	\l	\l	vara:=1\l	varb:=2\lin\l	a:=b;\l	\l	\lend\l" -> "0x176a9a0\n\l\lvara:=1\lvarb:=2\nletExpexist
-	"0x176a9a0\n\l\lvara:=1\lvarb:=2" -> "0x176a650\n\l\lvara:=1\ndeclarationListexist
-		"0x176a650\n\l\lvara:=1" -> "0x176a160\n\l\ndeclarationListexist
-		"0x176a650\n\l\lvara:=1" -> "0x176a500\nvara:=1\ndeclarationListexist
-			"0x176a500\nvara:=1" -> "0x176a1c0\nvar\nexist
-			"0x176a500\nvara:=1" -> "0x176a270\na\nexist
-			"0x176a500\nvara:=1" -> "0x176a330\n:=\nexist
-			"0x176a500\nvara:=1" -> "0x176a3e0\n1\nexist
-	"0x176a9a0\n\l\lvara:=1\lvarb:=2" -> "0x176a8c0\nvarb:=2\ndeclarationListexist
-		"0x176a8c0\nvarb:=2" -> "0x176a4a0\nvar\nexist
-		"0x176a8c0\nvarb:=2" -> "0x176a6d0\nb\nexist
-		"0x176a8c0\nvarb:=2" -> "0x176a740\n:=\nexist
-		"0x176a8c0\nvarb:=2" -> "0x176a7a0\n2\nexist
-"0x176af00\nlet\l	\l	\l	vara:=1\l	varb:=2\lin\l	a:=b;\l	\l	\lend\l" -> "0x176a810\nin\nletExpexist
-"0x176af00\nlet\l	\l	\l	vara:=1\l	varb:=2\lin\l	a:=b;\l	\l	\lend\l" -> "0x176ae40\na:=b;\l\l\nletExpexist
-	"0x176ae40\na:=b;\l\l" -> "0x176acc0\na:=b\nexist
-		"0x176acc0\na:=b" -> "0x176ac10\na:=b\nexist
-			"0x176ac10\na:=b" -> "0x176aa20\na\nexist
-			"0x176ac10\na:=b" -> "0x176aa90\n:=\nexist
-			"0x176ac10\na:=b" -> "0x176aaf0\nb\nexist
-	"0x176ae40\na:=b;\l\l" -> "0x176ab60\n;\nexist
-	"0x176ae40\na:=b;\l\l" -> "0x176ade0\n\nexist
-"0x176af00\nlet\l	\l	\l	vara:=1\l	varb:=2\lin\l	a:=b;\l	\l	\lend\l" -> "0x176ad30\nend\nletExpexist
+"0x24c2f00\nletExp\nlet\l	\l	\l	vara:=1\l	varb:=2\lin\l	a:=b;\l	\l	\lend\l" -> "0x24c20b0\n\nlet\n"
+"0x24c2f00\nletExp\nlet\l	\l	\l	vara:=1\l	varb:=2\lin\l	a:=b;\l	\l	\lend\l" -> "0x24c29a0\ndeclarationList\n\l\lvara:=1\lvarb:=2\n"
+	"0x24c29a0\ndeclarationList\n\l\lvara:=1\lvarb:=2" -> "0x24c2650\ndeclarationList\n\l\lvara:=1\n"
+		"0x24c2650\ndeclarationList\n\l\lvara:=1" -> "0x24c2160\n\n\l\n"
+		"0x24c2650\ndeclarationList\n\l\lvara:=1" -> "0x24c2500\n\nvara:=1\n"
+			"0x24c2500\n\nvara:=1" -> "0x24c21c0\n\nvar\n"
+			"0x24c2500\n\nvara:=1" -> "0x24c2270\n\na\n"
+			"0x24c2500\n\nvara:=1" -> "0x24c2330\n\n:=\n"
+			"0x24c2500\n\nvara:=1" -> "0x24c23e0\n\n1\n"
+	"0x24c29a0\ndeclarationList\n\l\lvara:=1\lvarb:=2" -> "0x24c28c0\n\nvarb:=2\n"
+		"0x24c28c0\n\nvarb:=2" -> "0x24c24a0\n\nvar\n"
+		"0x24c28c0\n\nvarb:=2" -> "0x24c26d0\n\nb\n"
+		"0x24c28c0\n\nvarb:=2" -> "0x24c2740\n\n:=\n"
+		"0x24c28c0\n\nvarb:=2" -> "0x24c27a0\n\n2\n"
+"0x24c2f00\nletExp\nlet\l	\l	\l	vara:=1\l	varb:=2\lin\l	a:=b;\l	\l	\lend\l" -> "0x24c2810\n\nin\n"
+"0x24c2f00\nletExp\nlet\l	\l	\l	vara:=1\l	varb:=2\lin\l	a:=b;\l	\l	\lend\l" -> "0x24c2e40\n\na:=b;\l\l\n"
+	"0x24c2e40\n\na:=b;\l\l" -> "0x24c2cc0\n\na:=b\n"
+		"0x24c2cc0\n\na:=b" -> "0x24c2c10\n\na:=b\n"
+			"0x24c2c10\n\na:=b" -> "0x24c2a20\n\na\n"
+			"0x24c2c10\n\na:=b" -> "0x24c2a90\n\n:=\n"
+			"0x24c2c10\n\na:=b" -> "0x24c2af0\n\nb\n"
+	"0x24c2e40\n\na:=b;\l\l" -> "0x24c2b60\n\n;\n"
+	"0x24c2e40\n\na:=b;\l\l" -> "0x24c2de0\n\n\n"
+"0x24c2f00\nletExp\nlet\l	\l	\l	vara:=1\l	varb:=2\lin\l	a:=b;\l	\l	\lend\l" -> "0x24c2d30\n\nend\n"
 }
