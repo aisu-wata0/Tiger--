@@ -2,24 +2,28 @@ digraph G {
 	graph [fontname = "monospace"];
 	node [fontname = "monospace"];
 	edge [fontname = "monospace"];
-"0x2033fa0\nlet\l	vara:=1\l	varb:=2\lin\l	a:=b;\lend\l\l" -> "0x20332e0\nlet"
-"0x2033fa0\nlet\l	vara:=1\l	varb:=2\lin\l	a:=b;\lend\l\l" -> "0x2033af0\nvara:=1\lvarb:=2"
-	"0x2033af0\nvara:=1\lvarb:=2" -> "0x20336d0\nvara:=1"
-		"0x20336d0\nvara:=1" -> "0x2033390\nvar"
-		"0x20336d0\nvara:=1" -> "0x2033440\na"
-		"0x20336d0\nvara:=1" -> "0x2033500\n:="
-		"0x20336d0\nvara:=1" -> "0x20335b0\n1"
-	"0x2033af0\nvara:=1\lvarb:=2" -> "0x2033a10\nvarb:=2"
-		"0x2033a10\nvarb:=2" -> "0x2033670\nvar"
-		"0x2033a10\nvarb:=2" -> "0x2033820\nb"
-		"0x2033a10\nvarb:=2" -> "0x2033890\n:="
-		"0x2033a10\nvarb:=2" -> "0x20338f0\n2"
-"0x2033fa0\nlet\l	vara:=1\l	varb:=2\lin\l	a:=b;\lend\l\l" -> "0x2033960\nin"
-"0x2033fa0\nlet\l	vara:=1\l	varb:=2\lin\l	a:=b;\lend\l\l" -> "0x2033ec0\na:=b;"
-	"0x2033ec0\na:=b;" -> "0x2033d60\na:=b"
-		"0x2033d60\na:=b" -> "0x2033b70\na"
-		"0x2033d60\na:=b" -> "0x2033be0\n:="
-		"0x2033d60\na:=b" -> "0x2033c40\nb"
-	"0x2033ec0\na:=b;" -> "0x2033cb0\n;"
-"0x2033fa0\nlet\l	vara:=1\l	varb:=2\lin\l	a:=b;\lend\l\l" -> "0x2033e10\nend"
+"0x176af00\nlet\l	\l	\l	vara:=1\l	varb:=2\lin\l	a:=b;\l	\l	\lend\l" -> "0x176a0b0\nlet\nletExpexist
+"0x176af00\nlet\l	\l	\l	vara:=1\l	varb:=2\lin\l	a:=b;\l	\l	\lend\l" -> "0x176a9a0\n\l\lvara:=1\lvarb:=2\nletExpexist
+	"0x176a9a0\n\l\lvara:=1\lvarb:=2" -> "0x176a650\n\l\lvara:=1\ndeclarationListexist
+		"0x176a650\n\l\lvara:=1" -> "0x176a160\n\l\ndeclarationListexist
+		"0x176a650\n\l\lvara:=1" -> "0x176a500\nvara:=1\ndeclarationListexist
+			"0x176a500\nvara:=1" -> "0x176a1c0\nvar\nexist
+			"0x176a500\nvara:=1" -> "0x176a270\na\nexist
+			"0x176a500\nvara:=1" -> "0x176a330\n:=\nexist
+			"0x176a500\nvara:=1" -> "0x176a3e0\n1\nexist
+	"0x176a9a0\n\l\lvara:=1\lvarb:=2" -> "0x176a8c0\nvarb:=2\ndeclarationListexist
+		"0x176a8c0\nvarb:=2" -> "0x176a4a0\nvar\nexist
+		"0x176a8c0\nvarb:=2" -> "0x176a6d0\nb\nexist
+		"0x176a8c0\nvarb:=2" -> "0x176a740\n:=\nexist
+		"0x176a8c0\nvarb:=2" -> "0x176a7a0\n2\nexist
+"0x176af00\nlet\l	\l	\l	vara:=1\l	varb:=2\lin\l	a:=b;\l	\l	\lend\l" -> "0x176a810\nin\nletExpexist
+"0x176af00\nlet\l	\l	\l	vara:=1\l	varb:=2\lin\l	a:=b;\l	\l	\lend\l" -> "0x176ae40\na:=b;\l\l\nletExpexist
+	"0x176ae40\na:=b;\l\l" -> "0x176acc0\na:=b\nexist
+		"0x176acc0\na:=b" -> "0x176ac10\na:=b\nexist
+			"0x176ac10\na:=b" -> "0x176aa20\na\nexist
+			"0x176ac10\na:=b" -> "0x176aa90\n:=\nexist
+			"0x176ac10\na:=b" -> "0x176aaf0\nb\nexist
+	"0x176ae40\na:=b;\l\l" -> "0x176ab60\n;\nexist
+	"0x176ae40\na:=b;\l\l" -> "0x176ade0\n\nexist
+"0x176af00\nlet\l	\l	\l	vara:=1\l	varb:=2\lin\l	a:=b;\l	\l	\lend\l" -> "0x176ad30\nend\nletExpexist
 }
