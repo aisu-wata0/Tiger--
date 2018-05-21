@@ -40,18 +40,20 @@ extern char *yytext;
 extern int yylex();
 extern int yylineno;
 //extern int column;
+int errorNo = 0;
+int warnNo = 0;
 
 void yyerror(const std::string & msg, const std::string & note = "")
 {
+	++errorNo;
 	std::cerr << std::endl
 	<< "error: " << msg << " in line " << yylineno << ". \tNext token: " << yytext << std::endl;
 	std::cerr << note << std::endl;
-
-	exit(1);
 }
 
 void yywarn(const std::string & msg, const std::string & note = "")
 {
+	++warnNo;
 	std::cerr << std::endl
 	<< "warning: " << msg << " in line " << yylineno << ". Token = " << yytext << std::endl;
 	std::cerr << note << std::endl;
@@ -188,14 +190,31 @@ int main(int argc, char *argv[])
 
 	yyin = fopen(argv[i], "r");
 
-	if(!yyparse()){
-		printf("\n\nParsing completed\n\n");
-	} else {
-		printf("\n\nParsing failed\n\n");
-		exit(EXIT_FAILURE);
-	}
+	int result = yyparse();
 
 	fclose(yyin);
+
+	if(errorNo > 0){
+		printf("\n\nParsing failed\n\n");
+	} else {
+		printf("\n\nParsing completed\n\n");
+	}
+
+	std::string schar;
+
+	if(errorNo>0){
+		schar = "s";
+		if(errorNo == 1)
+			schar = "";
+		std::cout << errorNo << " error"+schar << "\n";
+	}
+
+	if(warnNo>0){
+		schar = "s";
+		if(warnNo == 1)
+			schar = "";
+		std::cout << warnNo << " warning"+schar << std::endl;
+	}
 
 	if(graphviz){
 		std::string filename("./derivationTree.dot");
@@ -219,6 +238,10 @@ int main(int argc, char *argv[])
 		command = ("xdg-open " + filename + ".png&");
 		std::cout << command << std::endl;
 		system(command.c_str());
+	}
+
+	if(errorNo > 0){
+		exit(EXIT_FAILURE);
 	}
 
 	return 0;
@@ -403,6 +426,14 @@ $$->type = $1->type;
 
 $$->pushChilds(std::vector<STNode*>{$1});
 if(logSyntax)std::cout << "\n== expression  -->  expressionList \t\tnext token: " << yytext << std::endl;
+}
+
+	| error
+{
+$$ = new STNodeExp;
+$$->code = std::move("ERROR");
+
+if(logSyntax)std::cout << "\n== ERROR  -->  expressionList \t\tnext token: " << yytext << std::endl;
 }
 
 /* //TODO: warnings

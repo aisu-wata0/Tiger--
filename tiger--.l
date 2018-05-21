@@ -77,6 +77,7 @@ bad_string        \"([^"\n]|\"\")+
 
 "*/"	{ // Unopened comment
 	yyerror("lexical: unopened comment");
+	idCount["UNKNOWN"] += 1;
 }
 
 var	{
@@ -328,6 +329,7 @@ end	{
 
 .	{
 	yyerror("lexical: illegal input");
+	idCount["UNKNOWN"] += 1;
 }
 
 
