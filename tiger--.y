@@ -94,7 +94,7 @@ public:
 
 	void printChilds(const std::string & prefix, std::ofstream & os){
 		for(auto it : childs){
-		os << prefix << '"' << this <<"\\n"<< this->rule << "\\n" << code << "\" -> \"" << it <<"\\n"<< it->rule<<"\\n" << it->code << "\"" << std::endl;
+		os << prefix << '\"' << this <<"\\n"<< this->rule << "\\n" << code << "\" -> \"" << it <<"\\n"<< it->rule<<"\\n" << it->code << "\"" << std::endl;
 			it->printChilds(prefix+"\t", os);
 		}
 	}
