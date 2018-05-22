@@ -1,15 +1,13 @@
 
-CC		= g++ -std=c++11
-
+CC			= g++ -std=c++14
+FLAGS		= -O0 -g
 LIB		=  -lfl -ly
 
 PROGRAM	= parser.exe
 
 YACCFLAGS = -v -d --debug --verbose --graph
 
-
 all: $(PROGRAM)
-
 
 clean:
 	rm -f *.tab.h *.tab.c lex.yy.c $(PROGRAM)
@@ -25,13 +23,13 @@ cleanTest:
 	rm -f test/*/*/*.log
 
 cleanAll: clean cleanDot cleanPng cleanTest
-	
+
 rebuild: clean all
 
 
 
 $(PROGRAM): lex yacc
-	$(CC) -O0 -g tiger--.tab.c $(LIB) -o $(PROGRAM);
+	$(CC) $(FLAGS) tiger--.tab.c $(LIB) -o $(PROGRAM);
 
 
 lex: tiger--.l
@@ -40,4 +38,3 @@ lex: tiger--.l
 
 yacc: tiger--.y
 	bison $(YACCFLAGS) tiger--.y
-	
