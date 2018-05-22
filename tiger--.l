@@ -1,28 +1,23 @@
 
 %{
-#include <stdio.h>
-#include <iostream>
-#include <map>
-#include <algorithm>
 
 #include "tiger--.tab.h"
 
 #define logLex true
 
 std::map<std::string,int> idCount;
-std::map<std::string, Id> idTable;
 
 template <class T>
 inline T* tokenFound(bool text = true){
 	if(logLex)
 		std::cout << yytext;
-	
+
 	T *pNode = new T;
 	yylval.Node = (STNode*)pNode;
-	
+
 	if(text)
 		pNode->code = std::move(std::string(yytext));
-	
+
 	return pNode;
 }
 
@@ -82,6 +77,7 @@ bad_string        \"([^"\n]|\"\")+
 
 "*/"	{ // Unopened comment
 	yyerror("lexical: unopened comment");
+	idCount["UNKNOWN"] += 1;
 }
 
 var	{
@@ -275,20 +271,19 @@ end	{
 
 {identifier}	{
 	auto lval = tokenFound<STNodeId>();
-	
+
 	std::string &id = lval->code;
 
 	auto search = idTable.find(id);
 
 	if(search != idTable.end()) {
 		lval->type = search->second.type;
+		lval->lineDeclared = search->second.lineDeclared;
 	} else {
-		// find out in syntax what it is
-		// and set
-		// idTable[id] = type found;
+		// find out in syntax what it is and set
+		// idTable[id] = type declared;
+    	lval->lineDeclared = yylineno;
 	}
-	
-	lval->lineDeclared = yylineno;
 
 	idCount["IDENTIFIER"] += 1;
 	return(IDENTIFIER);
@@ -296,42 +291,45 @@ end	{
 
 {unsigned_integer}	{
 	auto lval = tokenFound<STNodeInt>();
-	
+	yylval.Int->type = Type::Int;
+
 	lval->value = atoi(yytext);
-	
+
 	idCount["CONSTANT"] += 1;
 	return(CONSTANT);
 }
 
 {string}	{
-	tokenFound<STNode>();
-	
+	tokenFound<STNodeExp>();
+	yylval.Exp->type = Type::Str;
+
 	sanitize(yylval.Node->code);
-	
+
 	idCount["STRING_LITERAL"] += 1;
 	return(STRING_LITERAL);
 }
 
-{bad_string} {	
+{bad_string} {
 	yyerror("lexical: unclosed string");
 }
 
 {white_space}	{
 	if(logLex)
 		std::cout << yytext;
-	
+
 }/* no effect */
 
 \n	{
 	if(logLex)
 		std::cout << yytext;
-	
+
 	++yylineno;
 }
 
 
 .	{
 	yyerror("lexical: illegal input");
+	idCount["UNKNOWN"] += 1;
 }
 
 
@@ -341,7 +339,7 @@ end	{
 int main()
 {
 	yylex();
-	
+
 	for(auto it = idCount.begin(); it != idCount.end() ; ++it){
 		std::cout << it->first << " : " << it->second << "\n";
 	}
@@ -350,4 +348,3 @@ int main()
 }
 
 */
-
