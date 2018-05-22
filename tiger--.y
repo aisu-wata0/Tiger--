@@ -246,30 +246,6 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	if(graphviz){
-		std::string filename("./derivationTree.dot");
-		std::ofstream fileStream(filename);
-
-		fileStream << "digraph G {" << std::endl;
-
-		fileStream << "\tgraph [fontname = \"monospace\"];\n"
-		<< "\tnode [fontname = \"monospace\"];\n"
-		<< "\tedge [fontname = \"monospace\"];\n";
-
-		root->printChilds("", fileStream);
-		fileStream << "}" << std::endl;
-
-		std::cout << "\n\tSummoning dot and opening resulting graph picture\n" << std::endl;
-
-		std::string command = "dot -Tpng " + filename + " -O";
-		std::cout << command << std::endl;
-		system(command.c_str());
-
-		command = ("xdg-open " + filename + ".png&");
-		std::cout << command << std::endl;
-		system(command.c_str());
-	}
-
 	return 0;
 }
 
@@ -369,17 +345,11 @@ if(logSyntax)std::cout << "\n== declarationList declaration  -->  declarationLis
 	| // empty
 {
 $$ = new STNode;
+
 $$->rule = "declarationList";
 $$->code = std::move(std::string("\\l"));
 if(logSyntax)std::cout << "\n==   -->  declarationList \t\tnext token: " << yytext << std::endl;
 }
-
-	| // empty
-{
-$$ = new STNode;
-$$->code = std::move(std::string(""));
-}
-	;
 
 declaration
 	: declarationVar
@@ -699,7 +669,6 @@ $$->pushChilds(std::vector<STNode*>{$3});
 $$->code += "\\l\t";
 $$->pushChilds(std::vector<STNode*>{$4}, "\t");
 if(logSyntax)std::cout << "\n== IF valuedExp THEN expression --> ifThen \t\tnext token: " << yytext << std::endl;
->>>>>>> master
 }
 	;
 
