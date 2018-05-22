@@ -1,9 +1,11 @@
 let
 	var n := 0
-	function fun(a,b,c) := 
+	var a := 2
+	function fun(a,b,c) :=
 	(
-		a:=b*c
-	)   
+		a:=b*c;
+		a
+	)
 	var i := 2
 in
 	/*dangling else*/
@@ -13,15 +15,15 @@ in
 		else
 			b:=4
 	;
-	
+
 	if 5 then
 		a:=6
 	else
 		; /*empty*/
-	
+
 	f:=7;
-	
-	if (8) then  (	
+
+	if (8) then  (
 		if (9) then (
 			f:=10
 		);
@@ -29,13 +31,13 @@ in
 	) else (
 		n:=12 /* retorna valor de mesmo tipo que o do if then */
 	);
-	
+
 	while i <= n do
 	(
 		f := f * i;
 		i := i + 1
 	);
-	
+
 	while (a*b > 0) do
 	(
 		while (b <> a) do
@@ -44,7 +46,7 @@ in
 		);
 		a := a - 1;
 	);
-	
+
 	while i <= n do
 	(
 		let
@@ -53,8 +55,8 @@ in
 			b := b/x
 		end
 	);
-	
+
 	a := fun(n,f,i);
-	
+
 	b*b*a*b
 end
