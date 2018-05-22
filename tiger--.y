@@ -333,11 +333,14 @@ if(logSyntax)std::cout << "\n==  LET declarationList IN expressionList END -->  
 
 declarationList
 	: declarationList declaration
-{if(logSyntax)std::cout << "\n== declarationList declaration  -->  declarationList \t\tnext token:'" << yytext << std::endl;
+{
 $$ = new STNode;
+
 $$->rule = "declarationList";
 $$->pushChilds(std::vector<STNode*>{$1});
-$$->code += "\\l";
+if($1->code != ""){
+	$$->code += "\\l";
+}
 $$->pushChilds(std::vector<STNode*>{$2});
 if(logSyntax)std::cout << "\n== declarationList declaration  -->  declarationList \t\tnext token: " << yytext << std::endl;
 }
@@ -347,7 +350,7 @@ if(logSyntax)std::cout << "\n== declarationList declaration  -->  declarationLis
 $$ = new STNode;
 
 $$->rule = "declarationList";
-$$->code = std::move(std::string("\\l"));
+$$->code = std::move(std::string(""));
 if(logSyntax)std::cout << "\n==   -->  declarationList \t\tnext token: " << yytext << std::endl;
 }
 
@@ -426,7 +429,6 @@ $$->type = $3->type;
 $$->pushChilds(std::vector<STNode*>{$1, $2});
 $$->code += "\\l";
 $$->pushChilds(std::vector<STNode*>{$3});
-$$->code += "\\l";
 if(logSyntax)std::cout << "\n==  expressionList ';' expression  -->  expressionList \t\tnext token: " << yytext << std::endl;
 }
 
@@ -589,18 +591,20 @@ functionCall // TODO: semantic: maybe this ID was not declared
 	: IDENTIFIER '(' parameterList ')'
 {
 $$ = new STNodeExp;
+$$->type = $1->type;
+
 $$->rule = "functionCall";
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3, $4});
-$$->type = $1->type;
 if(logSyntax)std::cout << "\n== IDENTIFIER '(' parameterList ')'  -->  functionCall \t\tnext token: " << yytext << std::endl;
 }
 
 	| IDENTIFIER '(' ')'
 {
 $$ = new STNodeExp;
+$$->type = $1->type;
+
 $$->rule = "functionCall";
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
-$$->type = $1->type;
 if(logSyntax)std::cout << "\n== IDENTIFIER '(' ')'  -->  functionCall \t\tnext token: " << yytext << std::endl;
 }
 	;
