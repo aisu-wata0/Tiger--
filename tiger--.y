@@ -14,6 +14,7 @@
 %token IN
 
 %expect 1 // ctrl+f "conflict" for explanations
+%locations
 
 %start program
 
@@ -178,7 +179,7 @@ void checkTypeID(STNodeId* node1, Type t2) {/**
 
 int count = 0;
 int graphviz = 0;
-STNode *root;
+STNode *root = nullptr;
 
 int main(int argc, char *argv[])
 {
@@ -218,7 +219,7 @@ int main(int argc, char *argv[])
 		std::cout << warnNo << " warning"+schar << std::endl;
 	}
 
-	if(graphviz){
+	if(graphviz && root != nullptr){
 		std::string filename("./derivationTree.dot");
 		std::ofstream fileStream(filename);
 
@@ -294,7 +295,7 @@ $1->code += "\\l";
 
 root = $1;
 
-if(logSyntax)std::cout << "\n==  letExp -->  program \t\tnext token: " << yytext << std::endl;
+if(logSyntax)std::cout << "\n==  letExp -->  program \t\tnext token: " << yytext << std::endl << "lines: " << yylineno << std::endl;
 }
 
 	;
