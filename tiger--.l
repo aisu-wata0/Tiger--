@@ -3,6 +3,12 @@
 
 #include "tiger--.tab.h"
 
+int yycolumn = 1;
+
+#define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno; \
+    yylloc.first_column = yycolumn; yylloc.last_column = yycolumn + yyleng - 1; \
+    yycolumn += yyleng;
+
 #define logLex true
 
 std::map<std::string,int> idCount;
@@ -49,6 +55,7 @@ void sanitize(std::string &stringValue)
 
 %}
 
+%option yylineno
 
 %x C_COMMENT
 
@@ -71,8 +78,8 @@ bad_string        \"([^"\n]|\"\")+
 "/*"					BEGIN(C_COMMENT);
 <C_COMMENT>"*/"			BEGIN(INITIAL);
 <C_COMMENT>"/*"			{} // ignore nested comments
-<C_COMMENT>[^*/\n]+		// ignore
-<C_COMMENT>\n			++yylineno;
+<C_COMMENT>[^*/\n]+		{} // ignore
+<C_COMMENT>\n			{}
 <C_COMMENT><<EOF>>		yyerror("lexical: unclosed comment");
 
 "*/"	{ // Unopened comment
@@ -322,8 +329,8 @@ end	{
 \n	{
 	if(logLex)
 		std::cout << yytext;
-
-	++yylineno;
+    
+    yycolumn = 1;
 }
 
 
