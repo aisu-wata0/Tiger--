@@ -1,0 +1,7 @@
+let
+    var a := 1
+in
+	if (a) (
+		printf("I have no then and must print")
+	)
+end

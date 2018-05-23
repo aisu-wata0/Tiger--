@@ -48,7 +48,7 @@ void yyerror(const std::string & msg, const std::string & note = "")
 {
 	++errorNo;
 	std::cerr << std::endl
-	<< "error: " << msg << " in line " << yylineno << ". \tNext token: " << yytext << std::endl;
+	<< "error: " << msg << " in line " << yylineno << ".\n\tNext token: " << yytext << std::endl;
 	std::cerr << note << std::endl;
 }
 
@@ -263,6 +263,8 @@ int main(int argc, char *argv[])
 
 %}
 
+%error-verbose
+
 %union{
 	int *p;
 	STNode *Node;
@@ -330,13 +332,43 @@ $$->code += "\\l";
 $$->pushChilds(std::vector<STNode*>{$5});
 if(logSyntax)std::cout << "\n==  LET declarationList IN expressionList END -->  letExp \t\tnext token: " << yytext << std::endl;
 }
+/*
+	| error declarationList IN expressionList END
+{
+$$ = new STNodeExp;
+$$->type = $4->type;
 
+$$->rule = "letExp";
+$$->code += "ERROR";
+$$->code += "\\l\t";
+$$->pushChilds(std::vector<STNode*>{$2}, "\t");
+$$->code += "\\l";
+$$->pushChilds(std::vector<STNode*>{$3});
+$$->code += "\\l\t";
+$$->pushChilds(std::vector<STNode*>{$4}, "\t");
+$$->code += "\\l";
+$$->pushChilds(std::vector<STNode*>{$5});
+if(logSyntax)std::cout << "\n==  ERROR declarationList IN expressionList END -->  letExp \t\tnext token: " << yytext << std::endl;
+}
+*/
+	| LET declarationList error expressionList END
+{
+$$ = new STNodeExp;
+$$->type = $4->type;
+
+$$->rule = "letExp";
+$$->pushChilds(std::vector<STNode*>{$1});
+$$->code += "\\l\t";
+$$->pushChilds(std::vector<STNode*>{$2}, "\t");
+$$->code += "\\l";
+$$->code += "ERROR";
+$$->code += "\\l\t";
+$$->pushChilds(std::vector<STNode*>{$4}, "\t");
+$$->code += "\\l";
+$$->pushChilds(std::vector<STNode*>{$5});
+if(logSyntax)std::cout << "\n==  LET declarationList ERROR expressionList END -->  letExp \t\tnext token: " << yytext << std::endl;
+}
 /* // TODO: warnings
-	| VAR
-
-{yyerror("syntax: missing let");}
-	| LET declarationList expression
-{yyerror("syntax: missing in");}
 	| LET declarationList IN expressionList
 {yyerror("syntax: missing end");}
 */
@@ -382,7 +414,9 @@ idTable[id].lineDeclared = $2->lineDeclared;
 idTable[id].type = $4->type;
 
 $$->rule = "declarationVar";
-$$->pushChilds(std::vector<STNode*>{$1, $2, $3, $4});
+$$->pushChilds(std::vector<STNode*>{$1});
+$$->code += " ";
+$$->pushChilds(std::vector<STNode*>{$2, $3, $4});
 if(logSyntax)std::cout << "\n== VAR IDENTIFIER ASSIGN valuedExp  -->  declarationVar \t\tnext token: " << yytext << std::endl;
 }
 
@@ -399,7 +433,9 @@ idTable[id].lineDeclared = $2->lineDeclared;
 idTable[id].type = $7->type;
 
 $$->rule = "declarationFunc";
-$$->pushChilds(std::vector<STNode*>{$1, $2, $3, $4, $5, $6});
+$$->pushChilds(std::vector<STNode*>{$1});
+$$->code += " ";
+$$->pushChilds(std::vector<STNode*>{$2, $3, $4, $5, $6});
 $$->code += "\\l\t";
 $$->pushChilds(std::vector<STNode*>{$7}, "\t");
 if(logSyntax)std::cout << "\n== FUNCTION IDENTIFIER '(' parameterDeclaration ')' ASSIGN expression  -->  declarationFunc \t\tnext token: " << yytext << std::endl;
