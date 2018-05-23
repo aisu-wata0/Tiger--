@@ -272,7 +272,7 @@ int main(int argc, char *argv[])
 %type <Exp> sequence
 %type <Node> attribution whileLoop
 %type <Exp> functionCall
-%type <Node> parameter_declaration parameterList ifThenExp ifThenElse ifThen
+%type <Node> parameterDeclaration parameterList ifThenExp ifThenElse ifThen
 
 %type <Int> CONSTANT
 %type <Id> IDENTIFIER
@@ -378,7 +378,7 @@ if(logSyntax)std::cout << "\n== VAR IDENTIFIER ASSIGN valuedExp  -->  declaratio
 	;
 
 declarationFunc
-	: FUNCTION IDENTIFIER '(' parameter_declaration ')' ASSIGN expression
+	: FUNCTION IDENTIFIER '(' parameterDeclaration ')' ASSIGN expression
 {
 $$ = new STNode;
 
@@ -391,31 +391,31 @@ $$->rule = "declarationFunc";
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3, $4, $5, $6});
 $$->code += "\\l\t";
 $$->pushChilds(std::vector<STNode*>{$7}, "\t");
-if(logSyntax)std::cout << "\n== FUNCTION IDENTIFIER '(' parameter_declaration ')' ASSIGN expression  -->  declarationFunc \t\tnext token: " << yytext << std::endl;
+if(logSyntax)std::cout << "\n== FUNCTION IDENTIFIER '(' parameterDeclaration ')' ASSIGN expression  -->  declarationFunc \t\tnext token: " << yytext << std::endl;
 }
 
 	;
 
-parameter_declaration
-    : parameter_declaration ',' IDENTIFIER
+parameterDeclaration
+    : parameterDeclaration ',' IDENTIFIER
 {
 $$ = new STNode;
-$$->rule = "parameter_declaration";
+$$->rule = "parameterDeclaration";
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
-if(logSyntax)std::cout << "\n== IDENTIFIER ',' parameter_declaration --> parameter_declaration \t\tnext token: " << yytext << std::endl;
+if(logSyntax)std::cout << "\n== IDENTIFIER ',' parameterDeclaration --> parameterDeclaration \t\tnext token: " << yytext << std::endl;
 }
 
     | IDENTIFIER
 {
-if(logSyntax)std::cout << "\n== IDENTIFIER --> parameter_declaration \t\tnext token: " << yytext << std::endl;
+if(logSyntax)std::cout << "\n== IDENTIFIER --> parameterDeclaration \t\tnext token: " << yytext << std::endl;
 }
 
     | // empty
 {
 $$ = new STNode;
-$$->rule = "parameter_declaration";
+$$->rule = "parameterDeclaration";
 $$->code = std::move(std::string(""));
-if(logSyntax)std::cout << "\n==  --> parameter_declaration \t\tnext token: " << yytext << std::endl;
+if(logSyntax)std::cout << "\n==  --> parameterDeclaration \t\tnext token: " << yytext << std::endl;
 }
     ;
 
@@ -611,7 +611,7 @@ if(logSyntax)std::cout << "\n== IDENTIFIER '(' ')'  -->  functionCall \t\tnext t
 	;
 
 parameterList
-	: valuedExp ',' parameterList
+	: parameterList ',' valuedExp
 {
 $$ = new STNode;
 $$->rule = "parameterList";
