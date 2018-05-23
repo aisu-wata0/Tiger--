@@ -332,25 +332,8 @@ $$->code += "\\l";
 $$->pushChilds(std::vector<STNode*>{$5});
 if(logSyntax)std::cout << "\n==  LET declarationList IN expressionList END -->  letExp \t\tnext token: " << yytext << std::endl;
 }
-/*
-	| error declarationList IN expressionList END
-{
-$$ = new STNodeExp;
-$$->type = $4->type;
 
-$$->rule = "letExp";
-$$->code += "ERROR";
-$$->code += "\\l\t";
-$$->pushChilds(std::vector<STNode*>{$2}, "\t");
-$$->code += "\\l";
-$$->pushChilds(std::vector<STNode*>{$3});
-$$->code += "\\l\t";
-$$->pushChilds(std::vector<STNode*>{$4}, "\t");
-$$->code += "\\l";
-$$->pushChilds(std::vector<STNode*>{$5});
-if(logSyntax)std::cout << "\n==  ERROR declarationList IN expressionList END -->  letExp \t\tnext token: " << yytext << std::endl;
-}
-*/
+// ERROR HANDLING
 	| LET declarationList error expressionList END
 {
 $$ = new STNodeExp;
@@ -368,10 +351,6 @@ $$->code += "\\l";
 $$->pushChilds(std::vector<STNode*>{$5});
 if(logSyntax)std::cout << "\n==  LET declarationList ERROR expressionList END -->  letExp \t\tnext token: " << yytext << std::endl;
 }
-/* // TODO: warnings
-	| LET declarationList IN expressionList
-{yyerror("syntax: missing end");}
-*/
 	;
 
 
