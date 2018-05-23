@@ -179,6 +179,7 @@ void checkTypeID(STNodeId* node1, Type t2) {/**
 
 int count = 0;
 int graphviz = 0;
+int graphvizPNG = 0;
 STNode *root = nullptr;
 
 int main(int argc, char *argv[])
@@ -188,6 +189,11 @@ int main(int argc, char *argv[])
 	if(argc > 1)
 	if(strcmp(argv[i], "-g") == 0){
 		graphviz = 1;
+		++i;
+	}
+	if(strcmp(argv[i], "-G") == 0){
+		graphviz = 1;
+		graphvizPNG = 1;
 		++i;
 	}
 
@@ -220,6 +226,8 @@ int main(int argc, char *argv[])
 	}
 
 	if(graphviz && root != nullptr){
+		std::cout << "\n\tWriting derivation tree to dot file" << std::endl;
+
 		std::string filename("./derivationTree.dot");
 		std::ofstream fileStream(filename);
 
@@ -232,15 +240,18 @@ int main(int argc, char *argv[])
 		root->printChilds("", fileStream, numberOfNodes);
 		fileStream << "}" << std::endl;
 
-		std::cout << "\n\tSummoning dot and opening resulting graph picture\n" << std::endl;
 
-		std::string command = "dot -Tpng " + filename + " -O";
-		std::cout << command << std::endl;
-		system(command.c_str());
+		if(graphvizPNG){
+			std::cout << "\n\tSummoning dot and opening resulting graph picture\n" << std::endl;
 
-		command = ("xdg-open " + filename + ".png&");
-		std::cout << command << std::endl;
-		system(command.c_str());
+			std::string command = "dot -Tpng " + filename + " -O";
+			std::cout << command << std::endl;
+			system(command.c_str());
+
+			command = ("xdg-open " + filename + ".png&");
+			std::cout << command << std::endl;
+			system(command.c_str());
+		}
 	}
 
 	if(errorNo > 0){
