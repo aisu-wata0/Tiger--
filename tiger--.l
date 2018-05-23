@@ -9,6 +9,12 @@ int yycolumn = 1;
     yylloc.first_column = yycolumn; yylloc.last_column = yycolumn + yyleng - 1; \
     yycolumn += yyleng;
 
+// called when \n is found
+void yynewLine(){
+    // ++yylineno;
+    yycolumn = 1; // reset column count
+}
+
 #define logLex true
 
 std::map<std::string,int> idCount;
@@ -79,8 +85,8 @@ bad_string        \"([^"\n]|\"\")+
 <C_COMMENT>"*/"			BEGIN(INITIAL);
 <C_COMMENT>"/*"			{} // ignore nested comments
 <C_COMMENT>[^*/\n]+		{} // ignore
-<C_COMMENT>\n			{}
-<C_COMMENT><<EOF>>		yyerror("lexical: unclosed comment");
+<C_COMMENT>\n			{ if(logLex) std::cout << yytext; yynewLine(); }
+<C_COMMENT><<EOF>>		{ yyerror("lexical: unclosed comment"); return(EOF);}
 
 "*/"	{ // Unopened comment
 	yyerror("lexical: unopened comment");
@@ -329,8 +335,8 @@ end	{
 \n	{
 	if(logLex)
 		std::cout << yytext;
-    
-    yycolumn = 1;
+
+    yynewLine();
 }
 
 

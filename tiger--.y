@@ -882,6 +882,11 @@ if(logSyntax)std::cout << "\n== IDENTIFIER --> arithExpValue \t\tnext token: " <
 if(logSyntax)std::cout << "\n== CONSTANT --> arithExpValue \t\tnext token: " << yytext << std::endl;
 }
 
+	| STRING_LITERAL
+{
+if(logSyntax)std::cout << "\n== STRING_LITERAL  -->  valuedExp \t\tnext token: " << yytext << std::endl;
+}
+
 	| functionCall
 {
 if(logSyntax)std::cout << "\n== functionCall --> arithExpValue \t\tnext token: " << yytext << std::endl;
@@ -890,11 +895,6 @@ if(logSyntax)std::cout << "\n== functionCall --> arithExpValue \t\tnext token: "
 	| sequence
 {
 if(logSyntax)std::cout << "\n== sequence  -->  valuedExp \t\tnext token: " << yytext << std::endl;
-}
-
-	| STRING_LITERAL
-{
-if(logSyntax)std::cout << "\n== STRING_LITERAL  -->  valuedExp \t\tnext token: " << yytext << std::endl;
 }
 
 	| letExp
