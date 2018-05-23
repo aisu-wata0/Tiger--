@@ -3,7 +3,8 @@ let
 	var f := 1     /* o fatorial  */
 	var i := 2     /* um contador */
 in
-	a:= v:=c;
+	a := v
+	v := c;
 	printf("Entre com o numero:");
 	n := getint()
 end
