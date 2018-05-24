@@ -1,11 +1,15 @@
 
 CC			= g++ -std=c++14
-FLAGS		= -O0 -g
+FLAGS		= -O0 -g # DEBUG
+#FLAGS		= -O3 # RELEASE
+
+YACCFLAGS = -v -d --debug --verbose --graph
+#YACCFLAGS = 
+
 LIB		=  -lfl -ly
 
 PROGRAM	= parser.exe
 
-YACCFLAGS = -v -d --debug --verbose --graph
 
 all: $(PROGRAM)
 
