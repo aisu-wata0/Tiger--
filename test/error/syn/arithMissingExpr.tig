@@ -1,9 +1,5 @@
 let
-    var n := 0     
-    var f := 1     
-    var i := 2     
-
-
+    var n := 0
 in  
-    n:=f**n /*falta uma expressao ou sobrou um operador*/
+    n:=n**0 /*falta uma expressao ou sobrou um operador*/
 end

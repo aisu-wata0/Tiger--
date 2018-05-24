@@ -1,7 +1,5 @@
 let
-    var n := 0     
-    var f := 1     
-    var i := 2     
+    var a := 0
 
-    printf("%d",fun(n,f,i)/0);   
+    printf("%d\n", a)
 end

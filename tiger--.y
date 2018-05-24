@@ -156,7 +156,7 @@ void checkDeclare(const std::string & id) {
 	}
 }
 
-void checkType(Type t1, Type t2) {/**
+void checkType(Type t1, Type t2) {/** TODO
 	if(t1 != t2){
 		std::ostringstream msg;
 		msg << "semantic: type mismatch '" << t1 << "' with '" << t2 << "'\n";
@@ -164,7 +164,7 @@ void checkType(Type t1, Type t2) {/**
 	}
 /**/
 }
-void checkTypeID(STNodeId* node1, Type t2) {/**
+void checkTypeID(STNodeId* node1, Type t2) {/** TODO
 	if(node1->type != t2){
 		std::ostringstream msg, note;
 		msg << "semantic: type mismatch '" << node1->type << "' with '" << t2 << "' ";
@@ -178,7 +178,7 @@ void checkTypeID(STNodeId* node1, Type t2) {/**
 #include "lex.yy.c"
 
 void unexpectedToken(const std::string & msg, YYLTYPE err){
-	std::cerr << msg << ", unexpected token: " << yytext << std::endl;
+	std::cerr << msg << std::endl;
 	std::cerr << "error start line:column " << err.first_line << ":" << err.first_column << std::endl;
 	std::cerr << "error end   line:column " << err.last_line << ":" << err.last_column << std::endl;
 }
@@ -362,6 +362,7 @@ $$->pushChilds(std::vector<STNode*>{$4}, "\t");
 $$->code += "\\l";
 $$->pushChilds(std::vector<STNode*>{$5});
 if(logSyntax)std::cout << "\n REDUCE:   LET declarationList ERROR expressionList END -->  letExp \t\tnext token: " << yytext << std::endl;
+unexpectedToken("Missing 'in' in let expression", @3);
 }
 	;
 
@@ -428,7 +429,7 @@ $$->pushChilds(std::vector<STNode*>{$2});
 $$->code += " ERROR ";
 $$->pushChilds(std::vector<STNode*>{$4});
 if(logSyntax)std::cout << "\n REDUCE:  error IDENTIFIER ASSIGN valuedExp  -->  declarationVar \t\tnext token: " << yytext << std::endl;
-std::cout << "\n+++++++++++++++++" << yytext << std::endl;
+unexpectedToken("Missing ':=' in var declaration", @3);
 }
 
 	;
@@ -471,6 +472,7 @@ $$->pushChilds(std::vector<STNode*>{$4, $5, $6});
 $$->code += "\\l\t";
 $$->pushChilds(std::vector<STNode*>{$7}, "\t");
 if(logSyntax)std::cout << "\n REDUCE:  FUNCTION IDENTIFIER '(' parameterDeclaration ')' ASSIGN expression  -->  declarationFunc \t\tnext token: " << yytext << std::endl;
+unexpectedToken("Missing '(' at start of parameter declarations", @3);
 }
 
 	;
@@ -503,9 +505,8 @@ if(logSyntax)std::cout << "\n REDUCE:   --> parameterDeclaration \t\tnext token:
 $$ = new STNode;
 $$->rule = "parameterDeclaration";
 $$->code = std::move(std::string(" ERROR "));
-yyclearin;
-unexpectedToken("Trying to form parameter declaration list", @1);
 if(logSyntax)std::cout << "\n REDUCE: ERROR  --> parameterDeclaration \t\tnext token: " << yytext << std::endl;
+unexpectedToken("Invalid parameter declaration", @1);
 }
     ;
 
@@ -541,6 +542,7 @@ $$->code = std::move("ERROR");
 
 $$->rule = "expressionList";
 if(logSyntax)std::cout << "\n REDUCE:  ERROR  -->  expressionList \t\tnext token: " << yytext << std::endl;
+unexpectedToken("Missing ';' in expression list, discarting all previous expression", @1);
 }
 
 	;
