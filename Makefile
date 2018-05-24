@@ -3,8 +3,8 @@ CC			= g++ -std=c++14
 FLAGS		= -O0 -g # DEBUG
 #FLAGS		= -O3 # RELEASE
 
-YACCFLAGS = -v -d --debug --verbose --graph
-#YACCFLAGS = 
+YACCFLAGS = --defines --debug --verbose --graph
+#YACCFLAGS = --defines
 
 LIB		=  -lfl -ly
 
