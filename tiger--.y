@@ -252,11 +252,16 @@ int main(int argc, char *argv[])
 
 			std::string command = "dot -Tpng " + filename + " -O";
 			std::cout << command << std::endl;
-			system(command.c_str());
+			int result;
+			result = system(command.c_str());
+			if(result < 0)
+				std::cerr << "Command: \"" << command << "\" failed" << std::endl;
 
 			command = ("xdg-open " + filename + ".png&");
 			std::cout << command << std::endl;
-			system(command.c_str());
+			result = system(command.c_str());
+			if(result < 0)
+				std::cerr << "Command: \"" << command << "\" failed" << std::endl;
 		}
 	}
 
