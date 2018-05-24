@@ -15,7 +15,7 @@ void yynewLine(){
     yycolumn = 1; // reset column count
 }
 
-#define logLex true
+#define logLex false
 
 std::map<std::string,int> idCount;
 

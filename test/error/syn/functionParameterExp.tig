@@ -1,7 +1,7 @@
 let
     var n := 0
     var f := 1
-    function fun(a*b,c) := 
+    function fun(z, a*b, c+d , e, f) := 
     (
 	    a:=b*c
     )

@@ -32,7 +32,7 @@
 #include <map>
 #include <algorithm>
 
-#define logSyntax true
+#define logSyntax false
 //#define YYSTYPE class STNode *
 
 extern FILE *fp;
@@ -49,7 +49,8 @@ void yyerror(const std::string & msg, const std::string & note = "")
 	++errorNo;
 	std::cerr << std::endl
 	<< "error: " << msg << " in line " << yylineno << ".\n\tNext token: " << yytext << std::endl;
-	std::cerr << note << std::endl;
+	if(note != "")
+		std::cerr << note << std::endl;
 }
 
 void yywarn(const std::string & msg, const std::string & note = "")
@@ -59,7 +60,6 @@ void yywarn(const std::string & msg, const std::string & note = "")
 	<< "warning: " << msg << " in line " << yylineno << ". Token = " << yytext << std::endl;
 	std::cerr << note << std::endl;
 }
-
 
 void replaceAll(std::string& str, const std::string& from, const std::string& to) {
     if(from.empty())
@@ -177,6 +177,12 @@ void checkTypeID(STNodeId* node1, Type t2) {/**
 
 #include "lex.yy.c"
 
+void unexpectedToken(const std::string & msg, YYLTYPE err){
+	std::cerr << msg << ", unexpected token: " << yytext << std::endl;
+	std::cerr << "error start line:column " << err.first_line << ":" << err.first_column << std::endl;
+	std::cerr << "error end   line:column " << err.last_line << ":" << err.last_column << std::endl;
+}
+
 int count = 0;
 int graphviz = 0;
 int graphvizPNG = 0;
@@ -260,6 +266,7 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
+
 
 %}
 
@@ -491,7 +498,9 @@ if(logSyntax)std::cout << "\n REDUCE:   --> parameterDeclaration \t\tnext token:
 $$ = new STNode;
 $$->rule = "parameterDeclaration";
 $$->code = std::move(std::string(" ERROR "));
-if(logSyntax)std::cout << "\n REDUCE:   --> parameterDeclaration \t\tnext token: " << yytext << std::endl;
+yyclearin;
+unexpectedToken("Trying to form parameter declaration list", @1);
+if(logSyntax)std::cout << "\n REDUCE: ERROR  --> parameterDeclaration \t\tnext token: " << yytext << std::endl;
 }
     ;
 
