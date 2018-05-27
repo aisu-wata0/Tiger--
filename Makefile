@@ -1,14 +1,14 @@
 
 CC			= g++ -std=c++14
-FLAGS		= -O0 -g # DEBUG
-#FLAGS		= -O3 # RELEASE
+#FLAGS		= -O0 -g # DEBUG
+FLAGS		= -O3 # RELEASE
 
-YACCFLAGS = --defines --debug --verbose --graph
-#YACCFLAGS = --defines
+#YACCFLAGS = --defines --debug --verbose --graph
+YACCFLAGS = --defines
 
 LIB		=  -lfl -ly
 
-PROGRAM	= parser.exe
+PROGRAM	= tc--
 
 
 all: $(PROGRAM)
@@ -26,7 +26,7 @@ cleanTest:
 	rm -f *.log
 	rm -f test/*/*/*.log
 
-cleanAll: clean cleanDot cleanPng cleanTest
+cleanAll: clean cleanPng cleanDot cleanTest
 
 rebuild: clean all
 
