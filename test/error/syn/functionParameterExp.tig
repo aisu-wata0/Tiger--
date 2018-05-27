@@ -1,6 +1,6 @@
 let
-    function fun(z, a*b, c+d, e, f) := 
+    function fun(z, a*b, c, -d, f) := 
     (
     )
-in 
+in
 end
