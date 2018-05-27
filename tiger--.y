@@ -483,7 +483,7 @@ parameterDeclaration
 $$ = new STNode;
 $$->rule = "parameterDeclaration";
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
-if(logSyntax)std::cout << "\n REDUCE:  IDENTIFIER ',' parameterDeclaration --> parameterDeclaration \t\tnext token: " << yytext << std::endl;
+if(logSyntax)std::cout << "\n REDUCE:  parameterDeclaration ',' IDENTIFIER --> parameterDeclaration \t\tnext token: " << yytext << std::endl;
 }
 
     | IDENTIFIER
