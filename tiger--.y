@@ -192,15 +192,16 @@ int main(int argc, char *argv[])
 {
 	int i = 1;
 
-	if(argc > 1)
-	if(strcmp(argv[i], "-g") == 0){
-		graphviz = 1;
-		++i;
-	}
-	if(strcmp(argv[i], "-G") == 0){
-		graphviz = 1;
-		graphvizPNG = 1;
-		++i;
+	if(argc > 1){
+		if(strcmp(argv[i], "-g") == 0){
+			graphviz = 1;
+			++i;
+		}
+		if(strcmp(argv[i], "-G") == 0){
+			graphviz = 1;
+			graphvizPNG = 1;
+			++i;
+		}
 	}
 
 	yyin = fopen(argv[i], "r");
