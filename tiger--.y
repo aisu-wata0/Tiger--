@@ -592,7 +592,7 @@ if(logSyntax)std::cout << "\n REDUCE:    -->  voidExp \t\tnext token: " << yytex
 	;
 
 valuedExp
-	: logicExp
+	: arithExpMd
 {
 if(logSyntax)std::cout << "\n REDUCE:  logicExp  -->  valuedExp \t\tnext token: " << yytext << std::endl;
 }
@@ -752,8 +752,9 @@ if(logSyntax)std::cout << "\n REDUCE:  IF valuedExp THEN expression --> ifThen \
 	;
 
 
-logicExp
-	: logicExp '&' logicExpCom
+arithExpMd
+	: arithExpMd '&' arithExpMd
+%prec LGCOP
 {
 // checkType(Type::Int, $1);
 // checkType(Type::Int, $2);
@@ -765,7 +766,8 @@ $$->rule = "logicExp";
 if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " '&' " << $3->code << " --> logicExp \t\tnext token: " << yytext << std::endl;
 }
 
-	| logicExp '|' logicExpCom
+	| arithExpMd '|' arithExpMd
+%prec LGCOP
 {
 // checkType(Type::Int, $1);
 // checkType(Type::Int, $2);
@@ -776,11 +778,8 @@ $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
 $$->rule = "logicExp";
 if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " '|' " << $3->code << " --> logicExp \t\tnext token: " << yytext << std::endl;
 }
-	| logicExpCom
-	;
 
-logicExpCom
-	: logicExpCom '<' arithExp
+	| arithExpMd '<' arithExpMd
 %prec CMPOP
 {
 // checkType(Type::Int, $1);
@@ -793,7 +792,7 @@ $$->rule = "logicExpCom";
 if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " '<' " << $3->code << " --> logicExpCom \t\tnext token: " << yytext << std::endl;
 }
 
-	| logicExpCom '>' arithExp
+	| arithExpMd '>' arithExpMd
 %prec CMPOP
 {
 // checkType(Type::Int, $1);
@@ -806,7 +805,7 @@ $$->rule = "logicExpCom";
 if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " '>' " << $3->code << " --> logicExpCom \t\tnext token: " << yytext << std::endl;
 }
 
-	| logicExpCom '=' arithExp
+	| arithExpMd '=' arithExpMd
 %prec CMPOP
 {
 // checkType(Type::Int, $1);
@@ -819,7 +818,7 @@ $$->rule = "logicExpCom";
 if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " '&' " << $3->code << " --> logicExpCom \t\tnext token: " << yytext << std::endl;
 }
 
-	| logicExpCom NE_OP arithExp
+	| arithExpMd NE_OP arithExpMd
 %prec CMPOP
 {
 // checkType(Type::Int, $1);
@@ -832,7 +831,7 @@ $$->rule = "logicExpCom";
 if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " NE_OP " << $3->code << " --> logicExpCom \t\tnext token: " << yytext << std::endl;
 }
 
-	| logicExpCom LE_OP arithExp
+	| arithExpMd LE_OP arithExpMd
 %prec CMPOP
 {
 // checkType(Type::Int, $1);
@@ -845,7 +844,7 @@ $$->rule = "logicExpCom";
 if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " LE_OP " << $3->code << " --> logicExpCom \t\tnext token: " << yytext << std::endl;
 }
 
-	| logicExpCom GE_OP arithExp
+	| arithExpMd GE_OP arithExpMd
 %prec CMPOP
 {
 // checkType(Type::Int, $1);
@@ -858,16 +857,7 @@ $$->rule = "logicExpCom";
 if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " GE_OP " << $3->code << " --> logicExpCom \t\tnext token: " << yytext << std::endl;
 }
 
-	| arithExp
-{
-if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " --> logicExpCom \t\tnext token: " << yytext << std::endl;
-}
-
-	;
-
-
-arithExp
-	: arithExp '+' arithExpMd
+	| arithExpMd '+' arithExpMd
 %prec ADDOP
 {
 // checkType(Type::Int, $1);
@@ -879,7 +869,7 @@ $$->rule = "arithExp";
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
 if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " '+' " << $3->code << " --> arithExp \t\tnext token: " << yytext << std::endl;
 }
-	| arithExp '-' arithExpMd
+	| arithExpMd '-' arithExpMd
 %prec ADDOP
 {
 // checkType(Type::Int, $1);
@@ -891,15 +881,8 @@ $$->rule = "arithExp";
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
 if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " '-' " << $3->code << " --> arithExp \t\tnext token: " << yytext << std::endl;
 }
-	| arithExpMd
-{
-if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " --> arithExp \t\tnext token: " << yytext << std::endl;
-}
 
-	;
-
-arithExpMd
-	: arithExpMd '*' arithExpCon
+	| arithExpMd '*' arithExpMd
 %prec MULOP
 {
 // checkType(Type::Int, $1);
@@ -912,7 +895,7 @@ $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
 if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << "*" << $3->code << " --> arithExpMd \t\tnext token: " << yytext << std::endl;
 }
 
-	| arithExpMd '/' arithExpCon
+	| arithExpMd '/' arithExpMd
 %prec MULOP
 {
 // checkType(Type::Int, $1);
@@ -925,15 +908,7 @@ $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
 if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " '/' " << $3->code << " --> arithExpMd \t\tnext token: " << yytext << std::endl;
 }
 
-	| arithExpCon
-{
-if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " --> arithExpMd \t\tnext token: " << yytext << std::endl;
-}
-
-	;
-
-arithExpCon
-	: '-' arithExpValue
+	| '-' arithExpMd
 %prec UMINUS
 {
 // checkType(Type::Int, $2);
