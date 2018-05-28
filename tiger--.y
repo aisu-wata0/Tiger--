@@ -211,21 +211,19 @@ int main(int argc, char *argv[])
 	fclose(yyin);
 
 	if(errorNo > 0){
-		printf("\n\nParsing failed\n\n");
-	} else {
-		printf("\n\nParsing completed\n\n");
+		std::cout << "\nParsing failed\n";
 	}
 
 	std::string schar;
 
-	if(errorNo>0){
+	if(errorNo > 0){
 		schar = "s";
 		if(errorNo == 1)
 			schar = "";
 		std::cout << errorNo << " error"+schar << "\n";
 	}
 
-	if(warnNo>0){
+	if(warnNo > 0){
 		schar = "s";
 		if(warnNo == 1)
 			schar = "";
@@ -270,7 +268,7 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	return 0;
+	return EXIT_SUCCESS;
 }
 
 
