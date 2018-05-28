@@ -285,19 +285,19 @@ int main(int argc, char *argv[])
 	STNodeInt *Int;
 }
 
-%type <Int> logicExp logicExpCom arithExp arithExpMd arithExpCon arithExpValue;
 
-%type <Exp> letExp program
 
 %type <Node> declarationList declaration declarationVar declarationFunc
 
-%type <Exp> expressionList expression
-%type <Exp> voidExp
-%type <Exp> valuedExp
-%type <Exp> sequence
-%type <Node> attribution whileLoop
 %type <Exp> functionCall
-%type <Node> parameterDeclaration parameterList ifThenExp ifThenElse ifThen
+%type <Exp> expressionList expression
+%type <Exp> sequence
+%type <Exp> letExp program
+%type <Exp> valuedExp valuedExpValue
+%type <Exp> voidExp
+%type <Node> attribution whileLoop
+%type <Node> parameterDeclaration parameterList
+%type <Node> ifThenExp ifThenElse ifThen
 
 %type <Int> CONSTANT
 %type <Id> IDENTIFIER
@@ -591,12 +591,6 @@ if(logSyntax)std::cout << "\n REDUCE:    -->  voidExp \t\tnext token: " << yytex
 
 	;
 
-valuedExp
-	: arithExpMd
-{
-if(logSyntax)std::cout << "\n REDUCE:  logicExp  -->  valuedExp \t\tnext token: " << yytext << std::endl;
-}
-	;
 
 sequence
 	: '(' expressionList ')'
@@ -752,8 +746,8 @@ if(logSyntax)std::cout << "\n REDUCE:  IF valuedExp THEN expression --> ifThen \
 	;
 
 
-arithExpMd
-	: arithExpMd '&' arithExpMd
+valuedExp
+	: valuedExp '&' valuedExp
 %prec LGCOP
 {
 // checkType(Type::Int, $1);
@@ -762,11 +756,11 @@ $$ = new STNodeInt;
 $$->type = $1->type;
 
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
-$$->rule = "logicExp";
-if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " '&' " << $3->code << " --> logicExp \t\tnext token: " << yytext << std::endl;
+$$->rule = "valuedExp";
+if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " '&' " << $3->code << " --> valuedExp \t\tnext token: " << yytext << std::endl;
 }
 
-	| arithExpMd '|' arithExpMd
+	| valuedExp '|' valuedExp
 %prec LGCOP
 {
 // checkType(Type::Int, $1);
@@ -775,11 +769,11 @@ $$ = new STNodeInt;
 $$->type = $1->type;
 
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
-$$->rule = "logicExp";
-if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " '|' " << $3->code << " --> logicExp \t\tnext token: " << yytext << std::endl;
+$$->rule = "valuedExp";
+if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " '|' " << $3->code << " --> valuedExp \t\tnext token: " << yytext << std::endl;
 }
 
-	| arithExpMd '<' arithExpMd
+	| valuedExp '<' valuedExp
 %prec CMPOP
 {
 // checkType(Type::Int, $1);
@@ -788,11 +782,11 @@ $$ = new STNodeInt;
 $$->type = $1->type;
 
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
-$$->rule = "logicExpCom";
-if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " '<' " << $3->code << " --> logicExpCom \t\tnext token: " << yytext << std::endl;
+$$->rule = "valuedExp";
+if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " '<' " << $3->code << " --> valuedExp \t\tnext token: " << yytext << std::endl;
 }
 
-	| arithExpMd '>' arithExpMd
+	| valuedExp '>' valuedExp
 %prec CMPOP
 {
 // checkType(Type::Int, $1);
@@ -801,11 +795,11 @@ $$ = new STNodeInt;
 $$->type = $1->type;
 
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
-$$->rule = "logicExpCom";
-if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " '>' " << $3->code << " --> logicExpCom \t\tnext token: " << yytext << std::endl;
+$$->rule = "valuedExp";
+if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " '>' " << $3->code << " --> valuedExp \t\tnext token: " << yytext << std::endl;
 }
 
-	| arithExpMd '=' arithExpMd
+	| valuedExp '=' valuedExp
 %prec CMPOP
 {
 // checkType(Type::Int, $1);
@@ -814,11 +808,11 @@ $$ = new STNodeInt;
 $$->type = $1->type;
 
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
-$$->rule = "logicExpCom";
-if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " '&' " << $3->code << " --> logicExpCom \t\tnext token: " << yytext << std::endl;
+$$->rule = "valuedExp";
+if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " '&' " << $3->code << " --> valuedExp \t\tnext token: " << yytext << std::endl;
 }
 
-	| arithExpMd NE_OP arithExpMd
+	| valuedExp NE_OP valuedExp
 %prec CMPOP
 {
 // checkType(Type::Int, $1);
@@ -827,11 +821,11 @@ $$ = new STNodeInt;
 $$->type = $1->type;
 
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
-$$->rule = "logicExpCom";
-if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " NE_OP " << $3->code << " --> logicExpCom \t\tnext token: " << yytext << std::endl;
+$$->rule = "valuedExp";
+if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " NE_OP " << $3->code << " --> valuedExp \t\tnext token: " << yytext << std::endl;
 }
 
-	| arithExpMd LE_OP arithExpMd
+	| valuedExp LE_OP valuedExp
 %prec CMPOP
 {
 // checkType(Type::Int, $1);
@@ -840,11 +834,11 @@ $$ = new STNodeInt;
 $$->type = $1->type;
 
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
-$$->rule = "logicExpCom";
-if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " LE_OP " << $3->code << " --> logicExpCom \t\tnext token: " << yytext << std::endl;
+$$->rule = "valuedExp";
+if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " LE_OP " << $3->code << " --> valuedExp \t\tnext token: " << yytext << std::endl;
 }
 
-	| arithExpMd GE_OP arithExpMd
+	| valuedExp GE_OP valuedExp
 %prec CMPOP
 {
 // checkType(Type::Int, $1);
@@ -853,11 +847,11 @@ $$ = new STNodeInt;
 $$->type = $1->type;
 
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
-$$->rule = "logicExpCom";
-if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " GE_OP " << $3->code << " --> logicExpCom \t\tnext token: " << yytext << std::endl;
+$$->rule = "valuedExp";
+if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " GE_OP " << $3->code << " --> valuedExp \t\tnext token: " << yytext << std::endl;
 }
 
-	| arithExpMd '+' arithExpMd
+	| valuedExp '+' valuedExp
 %prec ADDOP
 {
 // checkType(Type::Int, $1);
@@ -865,11 +859,11 @@ if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " GE_OP " << $3->code <<
 $$ = new STNodeInt;
 $$->type = $1->type;
 
-$$->rule = "arithExp";
+$$->rule = "valuedExp";
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
-if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " '+' " << $3->code << " --> arithExp \t\tnext token: " << yytext << std::endl;
+if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " '+' " << $3->code << " --> valuedExp \t\tnext token: " << yytext << std::endl;
 }
-	| arithExpMd '-' arithExpMd
+	| valuedExp '-' valuedExp
 %prec ADDOP
 {
 // checkType(Type::Int, $1);
@@ -877,12 +871,12 @@ if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " '+' " << $3->code << "
 $$ = new STNodeInt;
 $$->type = $1->type;
 
-$$->rule = "arithExp";
+$$->rule = "valuedExp";
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
-if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " '-' " << $3->code << " --> arithExp \t\tnext token: " << yytext << std::endl;
+if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " '-' " << $3->code << " --> valuedExp \t\tnext token: " << yytext << std::endl;
 }
 
-	| arithExpMd '*' arithExpMd
+	| valuedExp '*' valuedExp
 %prec MULOP
 {
 // checkType(Type::Int, $1);
@@ -890,12 +884,12 @@ if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " '-' " << $3->code << "
 $$ = new STNodeInt;
 $$->type = $1->type;
 
-$$->rule = "arithExpMd";
+$$->rule = "valuedExp";
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
-if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << "*" << $3->code << " --> arithExpMd \t\tnext token: " << yytext << std::endl;
+if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << "*" << $3->code << " --> valuedExp \t\tnext token: " << yytext << std::endl;
 }
 
-	| arithExpMd '/' arithExpMd
+	| valuedExp '/' valuedExp
 %prec MULOP
 {
 // checkType(Type::Int, $1);
@@ -903,42 +897,42 @@ if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << "*" << $3->code << " -->
 $$ = new STNodeInt;
 $$->type = $1->type;
 
-$$->rule = "arithExpMd";
+$$->rule = "valuedExp";
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
-if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " '/' " << $3->code << " --> arithExpMd \t\tnext token: " << yytext << std::endl;
+if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " '/' " << $3->code << " --> valuedExp \t\tnext token: " << yytext << std::endl;
 }
 
-	| '-' arithExpMd
+	| '-' valuedExp
 %prec UMINUS
 {
 // checkType(Type::Int, $2);
 $$ = new STNodeInt;
 $$->type = $2->type;
 
-$$->rule = "arithExpCon";
+$$->rule = "valuedExp";
 $$->pushChilds(std::vector<STNode*>{$1, $2});
-if(logSyntax)std::cout << "\n REDUCE:  '-' " << $2->code << " --> arithExpCon \t\tnext token: " << yytext << std::endl;
+if(logSyntax)std::cout << "\n REDUCE:  '-' " << $2->code << " --> valuedExp \t\tnext token: " << yytext << std::endl;
 }
 
-	| arithExpValue
+	| valuedExpValue
 {
-if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " --> arithExpCon \t\tnext token: " << yytext << std::endl;
+if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " --> valuedExp \t\tnext token: " << yytext << std::endl;
 }
 
 	;
 
 // TODO: semantic: check types
-arithExpValue
+valuedExpValue
 	: IDENTIFIER
 {
 //std::cout << "\n" << $1->type << " " << $1->code << std::endl;
 
-if(logSyntax)std::cout << "\n REDUCE:  IDENTIFIER --> arithExpValue \t\tnext token: " << yytext << std::endl;
+if(logSyntax)std::cout << "\n REDUCE:  IDENTIFIER --> valuedExpValue \t\tnext token: " << yytext << std::endl;
 } // TODO: semantic: may be function id without calling
 
 	| CONSTANT
 {
-if(logSyntax)std::cout << "\n REDUCE:  CONSTANT --> arithExpValue \t\tnext token: " << yytext << std::endl;
+if(logSyntax)std::cout << "\n REDUCE:  CONSTANT --> valuedExpValue \t\tnext token: " << yytext << std::endl;
 }
 
 	| STRING_LITERAL
@@ -948,7 +942,7 @@ if(logSyntax)std::cout << "\n REDUCE:  STRING_LITERAL  -->  valuedExp \t\tnext t
 
 	| functionCall
 {
-if(logSyntax)std::cout << "\n REDUCE:  functionCall --> arithExpValue \t\tnext token: " << yytext << std::endl;
+if(logSyntax)std::cout << "\n REDUCE:  functionCall --> valuedExpValue \t\tnext token: " << yytext << std::endl;
 }
 
 	| sequence
@@ -969,7 +963,7 @@ $$->type = $2->type;
 
 $$->rule = "arithValue";
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
-if(logSyntax)std::cout << "\n REDUCE:  '(' valuedExp ')' --> arithExpValue \t\tnext token: " << yytext << std::endl;
+if(logSyntax)std::cout << "\n REDUCE:  '(' valuedExp ')' --> valuedExpValue \t\tnext token: " << yytext << std::endl;
 }
 
 	;
