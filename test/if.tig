@@ -1,12 +1,7 @@
 let
-    var n := 0     /* o numero    */
-    var f := 1     /* o fatorial  */
-    var i := 2     /* um contador */
-    
+    var n := 1
 in
-
-	if (f|i&n) then (
-	
-		n:=-n;		/* if then simples nao retorna valor */
-	);
+	if (n < 2) then (
+		n:=-n
+	)
 end

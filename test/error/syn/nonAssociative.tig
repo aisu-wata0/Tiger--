@@ -1,0 +1,5 @@
+let
+    var n := 0
+in
+    n:= n < n >= n /* cmpOP is non associative */
+end

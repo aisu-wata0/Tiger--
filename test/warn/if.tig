@@ -1,0 +1,7 @@
+let
+    var n := 0
+in
+	if (n < 1) then (
+		n:=-n;		/* if then simples nao retorna valor */
+	);
+end
