@@ -472,7 +472,7 @@ $$->pushChilds(std::vector<STNode*>{$4, $5, $6});
 $$->code += "\\l\t";
 $$->pushChilds(std::vector<STNode*>{$7}, "\t");
 if(logSyntax)std::cout << "\n REDUCE:  FUNCTION IDENTIFIER '(' parameterDeclaration ')' ASSIGN expression  -->  declarationFunc \t\tnext token: " << yytext << std::endl;
-unexpectedToken("Missing '(' at start of parameter declarations", @3);
+unexpectedToken("Missing '(' at start of parameter declarations in function declaration", @3);
 }
 
 	;
