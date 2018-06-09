@@ -313,7 +313,7 @@ int main(int argc, char *argv[])
 %%
 
 program
-	: letExp
+	: expression
 {
 $1->code += "\\l";
 
