@@ -284,7 +284,7 @@ end	{
 
 {identifier}	{
 	auto lval = tokenFound<STNodeId>();
-
+    lval->rule = "identifier";
 	std::string &id = lval->code;
 
 	auto search = idTable.find(id);
@@ -304,6 +304,7 @@ end	{
 
 {unsigned_integer}	{
 	auto lval = tokenFound<STNodeInt>();
+	lval->rule = "unsigned_integer";
 	yylval.Int->type = Type::Int;
 
 	lval->value = atoi(yytext);
@@ -313,7 +314,9 @@ end	{
 }
 
 {string}	{
-	tokenFound<STNodeExp>();
+	auto lval = tokenFound<STNodeExp>();
+	lval->rule = "string";
+	
 	yylval.Exp->type = Type::Str;
 
 	sanitize(yylval.Node->code);

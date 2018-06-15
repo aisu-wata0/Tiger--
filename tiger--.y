@@ -551,12 +551,17 @@ expression
 	: voidExp
 {
 $1->type = Type::Void;
-
+$$ = new STNodeExp;
+$$->rule = "expression";
+$$->pushChilds(std::vector<STNode*>{$1});
 if(logSyntax)std::cout << "\n REDUCE:  voidExp  -->  expression \t\tnext token: " << yytext << std::endl;
 }
 
 	| valuedExp
 {
+$$ = new STNodeExp;
+$$->rule = "expression";
+$$->pushChilds(std::vector<STNode*>{$1});
 if(logSyntax)std::cout << "\n REDUCE:  valuedExp  -->  expression \t\tnext token: " << yytext << std::endl;
 }
 
@@ -566,16 +571,25 @@ if(logSyntax)std::cout << "\n REDUCE:  valuedExp  -->  expression \t\tnext token
 voidExp
 	: ifThenExp
 {
+$$ = new STNodeExp;
+$$->rule = "voidExp";
+$$->pushChilds(std::vector<STNode*>{$1});
 if(logSyntax)std::cout << "\n REDUCE:  ifThenExp  -->  voidExp \t\tnext token: " << yytext << std::endl;
 }
 
 	| whileLoop
 {
+$$ = new STNodeExp;
+$$->rule = "voidExp";
+$$->pushChilds(std::vector<STNode*>{$1});
 if(logSyntax)std::cout << "\n REDUCE:  whileLoop  -->  voidExp \t\tnext token: " << yytext << std::endl;
 }
 
 	| attribution
 {
+$$ = new STNodeExp;
+$$->rule = "voidExp";
+$$->pushChilds(std::vector<STNode*>{$1});
 if(logSyntax)std::cout << "\n REDUCE:  attribution  -->  voidExp \t\tnext token: " << yytext << std::endl;
 }
 
@@ -687,6 +701,9 @@ if(logSyntax)std::cout << "\n REDUCE:  valuedExp ',' parameterList --> parameter
 }
 	| valuedExp
 {
+$$ = new STNode;
+$$->rule = "parameterList";
+$$->pushChilds(std::vector<STNode*>{$1});
 if(logSyntax)std::cout << "\n REDUCE:  valuedExp --> parameterList \t\tnext token: " << yytext << std::endl;
 }
 	;
@@ -695,11 +712,17 @@ if(logSyntax)std::cout << "\n REDUCE:  valuedExp --> parameterList \t\tnext toke
 ifThenExp
 	: ifThenElse
 {
+$$ = new STNode;
+$$->rule = "ifThenExp";
+$$->pushChilds(std::vector<STNode*>{$1});
 if(logSyntax)std::cout << "\n REDUCE:  ifThenElse --> ifThenExp \t\tnext token: " << yytext << std::endl;
 }
 
 	| ifThen
 {
+$$ = new STNode;
+$$->rule = "ifThenExp";
+$$->pushChilds(std::vector<STNode*>{$1});
 if(logSyntax)std::cout << "\n REDUCE:  ifThen --> ifThenExp \t\tnext token: " << yytext << std::endl;
 }
 
@@ -915,6 +938,10 @@ if(logSyntax)std::cout << "\n REDUCE:  '-' " << $2->code << " --> valuedExp \t\t
 
 	| valuedExpValue
 {
+$$ = new STNodeInt;
+$$->type = $1->type;
+$$->pushChilds(std::vector<STNode*>{$1});
+
 if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " --> valuedExp \t\tnext token: " << yytext << std::endl;
 }
 
@@ -924,43 +951,66 @@ if(logSyntax)std::cout << "\n REDUCE:  " << $1->code << " --> valuedExp \t\tnext
 valuedExpValue
 	: IDENTIFIER
 {
-//std::cout << "\n" << $1->type << " " << $1->code << std::endl;
-
+$$ = new STNodeInt;
+$$->type = $1->type;
+$$->rule = "valuedExpValue";
+$$->pushChilds(std::vector<STNode*>{$1});
 if(logSyntax)std::cout << "\n REDUCE:  IDENTIFIER --> valuedExpValue \t\tnext token: " << yytext << std::endl;
 } // TODO: semantic: may be function id without calling
 
 	| CONSTANT
 {
+$$ = new STNodeInt;
+$$->type = $1->type;
+$$->rule = "valuedExpValue";
+$$->pushChilds(std::vector<STNode*>{$1});
 if(logSyntax)std::cout << "\n REDUCE:  CONSTANT --> valuedExpValue \t\tnext token: " << yytext << std::endl;
 }
 
 	| STRING_LITERAL
 {
+$$ = new STNodeInt;
+$$->type = $1->type;
+$$->rule = "valuedExpValue";
+$$->pushChilds(std::vector<STNode*>{$1});
 if(logSyntax)std::cout << "\n REDUCE:  STRING_LITERAL  -->  valuedExp \t\tnext token: " << yytext << std::endl;
 }
 
 	| functionCall
 {
+$$ = new STNodeInt;
+$$->type = $1->type;
+$$->rule = "valuedExpValue";
+$$->pushChilds(std::vector<STNode*>{$1});
 if(logSyntax)std::cout << "\n REDUCE:  functionCall --> valuedExpValue \t\tnext token: " << yytext << std::endl;
 }
 
 	| sequence
 {
+$$ = new STNodeInt;
+$$->type = $1->type;
+$$->rule = "valuedExpValue";
+$$->pushChilds(std::vector<STNode*>{$1});
 if(logSyntax)std::cout << "\n REDUCE:  sequence  -->  valuedExp \t\tnext token: " << yytext << std::endl;
 }
 
 	| letExp
 {
+$$ = new STNodeInt;
+$$->type = $1->type;
+$$->rule = "valuedExpValue";
+$$->pushChilds(std::vector<STNode*>{$1});
 if(logSyntax)std::cout << "\n REDUCE:  letExp  -->  valuedExp \t\tnext token: " << yytext << std::endl;
 }
 
 // s-r conflict: this could be a sequence (expression): shift ')', instead of reducing valuedExp -> expression
 	| '(' valuedExp ')'
 {
+
 $$ = new STNodeInt;
 $$->type = $2->type;
 
-$$->rule = "arithValue";
+$$->rule = "valuedExpValue";
 $$->pushChilds(std::vector<STNode*>{$1, $2, $3});
 if(logSyntax)std::cout << "\n REDUCE:  '(' valuedExp ')' --> valuedExpValue \t\tnext token: " << yytext << std::endl;
 }
