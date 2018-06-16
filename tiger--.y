@@ -734,7 +734,7 @@ ifThenElse
 {
 $$ = new STNodeExp;
 
-$$->rule = "ifThenElse";
+//$$->rule = "ifThenElse";
 $$->pushChilds(std::vector<STNode*>{$1});
 $$->code += " ";
 $$->pushChilds(std::vector<STNode*>{$2});
@@ -755,7 +755,7 @@ ifThen
 {
 $$ = new STNodeExp;
 
-$$->rule = "ifThen";
+//$$->rule = "ifThen";
 $$->pushChilds(std::vector<STNode*>{$1});
 $$->code += " ";
 $$->pushChilds(std::vector<STNode*>{$2});
