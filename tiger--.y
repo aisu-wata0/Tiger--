@@ -71,6 +71,8 @@ void replaceAll(std::string& str, const std::string& from, const std::string& to
     }
 }
 
+
+// Trick to count the number of types automatically
 //!!! Subtract extra lines from TypeSTART_LINE if an entry takes more than one
 constexpr auto TypeSTART_LINE = __LINE__;
 enum class Type { // Each line has to be an enum, se above
@@ -80,6 +82,7 @@ enum class Type { // Each line has to be an enum, se above
 };
 constexpr auto TypeMax = __LINE__ - TypeSTART_LINE - 4;
 
+// Enum to String
 std::ostream& operator<<(std::ostream& out, const Type value){
 	std::string s;
 #define CASE_VAL(p) case(p): s = #p; break;
@@ -95,12 +98,14 @@ std::ostream& operator<<(std::ostream& out, const Type value){
 	return out << s;
 }
 
+// Identifier class
 class Id {
 public:
 	int lineDeclared;
 	Type type;
 };
 
+// Derivation tree node class
 class STNode {
 public:
 	std::string code;
@@ -117,6 +122,7 @@ public:
 		}
 	}
 
+	// print itself & childs with prefix before its childs
 	void printChilds(const std::string & prefix, std::ofstream & os, int & numberId){
 		int myId = numberId;
 		++numberId;
@@ -129,23 +135,29 @@ public:
 	}
 };
 
+// Expression node, has type
 class STNodeExp : public STNode {
 public:
 	Type type;
 };
 
+// Expression node + id information
 class STNodeId : public STNodeExp {
 public:
 	int lineDeclared;
 };
 
+// Expression node + value
 class STNodeInt : public STNodeExp {
 public:
 	int value;
 };
 
+
+// Global identifier table
 std::map<std::string, Id> idTable;
 
+// check identifier declaration status
 void checkDeclare(const std::string & id) {
 	auto search = idTable.find(id);
 	if(search != idTable.end()) {
@@ -184,14 +196,16 @@ void unexpectedToken(const std::string & msg, YYLTYPE err){
 }
 
 int count = 0;
+// main() flags
 int graphviz = 0;
 int graphvizPNG = 0;
+// derivation tree root node
 STNode *root = nullptr;
 
 int main(int argc, char *argv[])
 {
 	int i = 1;
-
+	// check args
 	if(argc > 1){
 		if(strcmp(argv[i], "-g") == 0){
 			graphviz = 1;
@@ -214,6 +228,7 @@ int main(int argc, char *argv[])
 		std::cout << "\nParsing failed\n";
 	}
 
+	// print errors & warnings
 	std::string schar;
 
 	if(errorNo > 0){
@@ -230,6 +245,7 @@ int main(int argc, char *argv[])
 		std::cout << warnNo << " warning"+schar << std::endl;
 	}
 
+	// print derivation tree as dot
 	if(graphviz && root != nullptr){
 		std::cout << "\n\tWriting derivation tree to dot file" << std::endl;
 
@@ -264,6 +280,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	// finish
 	if(errorNo > 0){
 		exit(EXIT_FAILURE);
 	}
@@ -285,6 +302,7 @@ int main(int argc, char *argv[])
 }
 
 
+// nonterminals type declarations
 
 %type <Node> declarationList declaration declarationVar declarationFunc
 
@@ -311,6 +329,8 @@ int main(int argc, char *argv[])
 %type <Node> IN
 
 %%
+
+// grammar
 
 program
 	: expression
